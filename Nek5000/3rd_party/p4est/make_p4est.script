@@ -1,0 +1,12 @@
+#!/bin/bash
+# due to nework problem
+#module swap craype-network-ofi craype-network-ucx
+#module swap cray-mpich cray-ucx
+#module load cray-mpich-ucx
+# different compilers
+module swap PrgEnv-cray/8.2.0 PrgEnv-aocc/8.2.0
+module list
+CC=cc CXX=CC F77=ftn FC=ftn ./configure --prefix=`pwd`/.. --enable-mpi --enable-mpiio --disable-shared |tee >(sed -n 's/.*LIBS://p' |sed 'N;s/\n/ /'|sed ':s;s/\(\<\S*\>\)\(.*\)\<\1\>/\1\2/g;ts;s/- //g;s/-\n//g;s/  */ /g;s/^[ \t]*//g' > LIB_LIST)
+make
+make install
+mv LIB_LIST ../

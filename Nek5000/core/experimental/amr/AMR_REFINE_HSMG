@@ -1,0 +1,28 @@
+!> @file AMR_REFINE_HSMG
+!! @brief include file with parameter and common block definitions for 
+!! refinement/coarsening for HSMG
+!! @author Adam Peplinski
+!! @date Feb 8, 2018
+!=======================================================================
+!     Volume interpolation arrays
+!     interpolation arrays coarse -> fine
+!     hsmg part
+      real IXAMRHCF(LXM*LXM,2,LMGN)
+!     transpose
+      real IXTAMRHCF(LXM*LXM,2,LMGN)
+
+!     interpolation arrays fine -> coarse
+!     hsmg part
+      real IXAMRHFC(LXM*LXM,2,LMGN)
+!     transpose
+      real IXTAMRHFC(LXM*LXM,2,LMGN)
+
+!     multiplicity arrays
+      real IMAMRH(LXM*LXM*LXM,LMGN), IMAMRHF(LXM*LXM,LMGN)
+
+
+!     common blocks
+      common /camr_IXYZH/ IXAMRHCF, IXTAMRHCF, IXAMRHFC, IXTAMRHFC
+
+      common /camr_IMULTH/ IMAMRH, IMAMRHF
+      

@@ -1,0 +1,75 @@
+# binary name
+BINNAME:=rea$(NDIM)Dtree
+
+# directories
+BINDIR=$(bin_nek_tools)
+MODDIR=./
+OBJDIR=./
+
+# Flags
+# production
+CFLAGS:=$(NEK_CFLAGS) $(US) -Ofast -c
+# debug
+#CFLAGS:=-DUNDERSCORE -Og -g -c
+# pre-processor flag
+CPPFLAGS:=-I./p4est/include -I../../core/ -I./
+
+# production
+FFLAGS:=-Ofast -c 
+# debug
+#FFLAGS:=-Og -g -fopt-info-all-optall=optimisation.txt -Wall -Warray-temporaries -Wfunction-elimination -Wsurprising -Wextra -fcheck=all -pedantic -std=f2003 -c
+# pre-processor flag
+FCPFLAGS:=$(CPPF)
+
+# pre-processing list
+PPLIST:=$(PPPO)-DN_DIM=$(NDIM)
+
+# linking flaggs
+LDFLAGS:=-L./p4est/lib/
+LIBS:=-lp4est -lsc
+#$(eval OPT_LIBS := $(shell cat ./p4est/LIB_LIST))
+
+# objects and modules
+OBJ = sc_fwrap.o p4est_fwrap.o byte.o paramM.o getmesh_tool.o getmesh_read.o getmesh.o getconn.o rea2treeM.o rea2tree.o
+MOD = paramm.mod getmesh_tool.mod getmesh_read.mod getmesh.mod getconn.mod rea2treem.mod rea2tree.mod
+
+# add dir names
+NOBJS = $(patsubst %,$(OBJDIR)/%,$(OBJ))
+NMODS = $(patsubst %,$(MODDIR)/%,$(MOD))
+
+.PHONY: all reatotree clean
+
+all: reatotree
+
+reatotree: $(NOBJS)
+	$(eval OPT_LIBS := $(shell cat ./p4est/LIB_LIST))
+	$(FC)  -o $(BINDIR)/$(BINNAME) $(NOBJS) $(LDFLAGS) $(LIBS) $(OPT_LIBS)
+
+clean:
+	@rm -f $(NOBJS) $(NMODS) ./optimisation.txt
+
+$(OBJDIR)/sc_fwrap.o          : sc_fwrap.c sc_fwrap.h       ; $(CC) $(CPPFLAGS) $(PPLIST) $(CFLAGS) $< -o $@
+$(OBJDIR)/p4est_fwrap.o       : p4est_fwrap.c p4est_fwrap.h ; $(CC) $(CPPFLAGS) $(PPLIST) $(CFLAGS) $< -o $@
+$(OBJDIR)/byte.o              : ../../core/byte.c           ; $(CC) $(CPPFLAGS) $(PPLIST) $(CFLAGS) ../../core/byte.c -o $@
+
+$(MODDIR)/paramm.mod          : paramM.f90   ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o paramM.o
+$(OBJDIR)/paramM.o            : paramM.f90   ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o $@
+
+$(MODDIR)/getmesh_tool.mod    : getmesh_tool.f90 $(MODDIR)/paramm.mod   ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o getmesh_tool.o
+$(OBJDIR)/getmesh_tool.o      : getmesh_tool.f90 $(MODDIR)/paramm.mod   ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o $@
+
+$(MODDIR)/getmesh_read.mod    : getmesh_read.f90 $(MODDIR)/paramm.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o getmesh_read.o
+$(OBJDIR)/getmesh_read.o      : getmesh_read.f90 $(MODDIR)/paramm.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o $@
+
+$(MODDIR)/getmesh.mod         : getmesh.f90 $(MODDIR)/paramm.mod $(MODDIR)/getmesh_read.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o getmesh.o
+$(OBJDIR)/getmesh.o           : getmesh.f90 $(MODDIR)/paramm.mod $(MODDIR)/getmesh_read.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o $@
+
+$(MODDIR)/getconn.mod         : getconn.f90 $(MODDIR)/paramm.mod $(MODDIR)/getmesh.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o getconn.o
+$(OBJDIR)/getconn.o           : getconn.f90 $(MODDIR)/paramm.mod $(MODDIR)/getmesh.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o $@
+
+$(MODDIR)/rea2treem.mod       : rea2treeM.f90 $(MODDIR)/paramm.mod $(MODDIR)/getconn.mod $(MODDIR)/getmesh.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o rea2treeM.o
+$(OBJDIR)/rea2treeM.o         : rea2treeM.f90 $(MODDIR)/paramm.mod $(MODDIR)/getconn.mod $(MODDIR)/getmesh.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o $@
+
+$(OBJDIR)/rea2tree.o          : rea2tree.f90 $(MODDIR)/paramm.mod $(MODDIR)/rea2treem.mod $(MODDIR)/getconn.mod $(MODDIR)/getmesh.mod $(MODDIR)/getmesh_tool.mod ; $(FC) $(FCPFLAGS) $(PPLIST) $(FFLAGS) $< -o $@
+
+

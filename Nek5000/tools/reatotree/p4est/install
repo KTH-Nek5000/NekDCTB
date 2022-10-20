@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+VER=1.1
+CHKSUM=ed8737d82ef4c97b9dfa2fd6e5134226f24c9b0b
+
+if [ "$1" == "clean" ]; then
+  rm -rf p4est bin etc include lib share LIB_LIST 2>/dev/null 
+  exit 0
+fi
+
+if [ -f ./lib/libp4est.a ]; then
+  exit 0
+fi
+
+wget --no-check-certificate -O v$VER.tar.gz http://p4est.github.io/release/p4est-$VER.tar.gz
+
+SUM=`openssl dgst -sha1 v$VER.tar.gz | sed 's/^.* //'`
+if [ $SUM != $CHKSUM ] ; then
+  echo 'Invalid checksum!'
+  rm -rf v$VER.tar.gz
+  exit 1
+fi
+
+rm -rf p4est 2>/dev/null
+mkdir p4est
+tar -zxvf v$VER.tar.gz -C ./p4est --strip-components=1
+cd p4est
+
+set -x
+F77=$FC ./configure --prefix=`pwd`/.. --enable-mpi --enable-mpiio --disable-shared --without-blas |tee >(sed -n 's/.*LIBS://p' |sed 'N;s/\n/ /'|sed ':s;s/\(\<\S*\>\)\(.*\)\<\1\>/\1\2/g;ts;s/- //g;s/-\n//g;s/  */ /g;s/^[ \t]*//g' > LIB_LIST)
+set +x
+make
+make install
+mv LIB_LIST ../

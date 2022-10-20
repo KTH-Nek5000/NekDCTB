@@ -1,0 +1,38 @@
+!> @file AMR_SHM
+!! @brief include file with parameter and common block definitions for 
+!! node splitting related variables
+!! @author Adam Peplinski
+!! @date Jun 05, 2018
+!=======================================================================
+      ! array sizes for inter- and intra-node operations
+      integer AMR_SHM_MAX ! max number of intranode cores
+      integer AMR_NDS_MAX ! max number of nodes
+      parameter (AMR_SHM_MAX = 128)
+      parameter (AMR_NDS_MAX = 8192)
+
+      ! node master id
+      integer AMR_SHMST
+      parameter (AMR_SHMST=0)
+      
+      ! MPI communicators
+      integer AMR_GLBCOMM   ! global communicator
+      integer AMR_SHMCOMM   ! communicator within shared memory nodes
+      integer AMR_NDSCOMM   ! communicator for node masters
+      integer AMR_GLBGROUP  ! global group
+      integer AMR_NDSGROUP  ! node masters group
+      integer AMR_SHMID, AMR_SHMNP ! local id and process number in shared memory communicator
+      integer AMR_NDSID, AMR_NDSNP ! local id and process number in inter-node communicator
+      common /camr_mpicomm/ AMR_GLBCOMM, AMR_SHMCOMM, AMR_NDSCOMM, 
+     $      AMR_GLBGROUP, AMR_NDSGROUP, AMR_SHMID, AMR_SHMNP,
+     $      AMR_NDSID, AMR_NDSNP
+     
+      ! MPI rank distribution
+      integer AMR_NNODE ! number of nodes
+      integer AMR_NODE_NR ! local master node position in offset array
+      integer AMR_NODE_GOFF(AMR_NDS_MAX) ! master node offset (should be identical with node id in global communicator)
+      common /camr_node/ AMR_NNODE, AMR_NODE_NR, AMR_NODE_GOFF
+      
+      ! AMR_IF2LEV - 2-level partitioning
+      ! AMR_IFNODEM - am I node master
+      logical AMR_IF2LEV, AMR_IFNODEM
+      common /camr_lpart/ AMR_IF2LEV, AMR_IFNODEM

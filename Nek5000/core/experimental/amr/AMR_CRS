@@ -1,0 +1,15 @@
+!> @file AMR_CRS
+!! @brief Include file with base functions and vetrax mapping for coarse grid solver
+!! @author Adam Peplinski
+!! @date Nov 28, 2016
+!=======================================================================
+      ! set of base functions to calculate coarse grid operator
+      ! 5 functions in 2D and 21 in 3D
+      integer AMR_CRS_BF_MAX
+      parameter (AMR_CRS_BF_MAX=21)
+      real AMR_CRS_BASE(LX1,LY1,LZ1,AMR_CRS_BF_MAX,AMR_NVRT)
+      common /camr_crs_base/ AMR_CRS_BASE
+      
+      ! maping of the vertex to the coarse base function
+      integer AMR_CRS_MAP(AMR_NVRT,LELT)
+      common /camr_crs_map/ AMR_CRS_MAP

@@ -1,0 +1,186 @@
+!> @file AMR
+!! @brief include file with parameter and common block definitions for 
+!! global nekamr variables
+!! @author Adam Peplinski
+!! @date Feb 26, 2016
+!=======================================================================
+      ! log priorities based on sc.h
+      integer AMR_LP_ALW, AMR_LP_TRC, AMR_LP_DEB, AMR_LP_VRB, 
+     $        AMR_LP_INF, AMR_LP_STT, AMR_LP_PRD, AMR_LP_ESS, 
+     $        AMR_LP_ERR, AMR_LP_SLN
+      parameter (AMR_LP_ALW=0)  !< always; this will log everything
+      parameter (AMR_LP_TRC=1)  !< trace; this will prefix file and line number
+      parameter (AMR_LP_DEB=2)  !< debug; any information on the internal state
+      parameter (AMR_LP_VRB=3)  !< verbose; information on conditions, decisions
+      parameter (AMR_LP_INF=4)  !< info; the main things a function is doing
+      parameter (AMR_LP_STT=5)  !< statistics; important for consistency or performance
+      parameter (AMR_LP_PRD=6)  !< production; a few lines for a major api function
+      parameter (AMR_LP_ESS=7)  !< essential; this logs a few lines max per program
+      parameter (AMR_LP_ERR=8)  !< error; this logs errors only
+      parameter (AMR_LP_SLN=9)  !< silent; this never logs anything
+
+      integer AMR_LP_DEF  !<  default log threshold for nekamr
+      integer AMR_PKG_ID  !< solver package id for logs doen with sc library
+      common /camr_logi/ AMR_LP_DEF, AMR_PKG_ID
+
+      ! this stuff should be in other place as it is quite general, but for now it is here
+      integer AMR_LSTL_LOG !< length of comment string
+      parameter (AMR_LSTL_LOG = 200)
+      integer AMR_LSTL_FNM    !< length of file name string
+      parameter (AMR_LSTL_FNM = 132)
+
+      ! for static array allocation
+      integer AMR_NVRT, AMR_NFCS, AMR_NEDG, AMR_NMAX
+      parameter (AMR_NVRT=2**LDIM)  !<  number of vertices (children)
+      parameter (AMR_NFCS=2*LDIM)  !<  number of faces
+      parameter (AMR_NEDG=max(0,12*(LDIM-2)))  !<  number of edges
+      parameter (AMR_NMAX=max(AMR_NVRT,AMR_NEDG))  !< max value for array alocation
+      
+      ! AMR_LXC, AMR_LXM, AMR_LMGN is just a copy; should be removed in the future
+      ! size for interpolation arrays for coarse grid solver; vertices only
+      ! must be consistent with lxc in DOMAIN
+      integer AMR_LXC
+      parameter (AMR_LXC = 2)
+      
+      ! dimension for hsmg solver
+      integer AMR_LXM
+      parameter (AMR_LXM = lx2+2)
+      integer AMR_LMGN
+      parameter (AMR_LMGN=3)
+      
+      ! module parameters
+      integer AMR_IOSET_MAX
+      parameter (AMR_IOSET_MAX=2)
+      integer AMR_IOSTART !< 0- fresh run, read ##.re2 and build mesh ; 1-AMR_IOSET_MAX - use restart files and skip ##.re2
+      integer AMR_IORSET  ! number of saved restart set
+      integer AMR_NSNAP ! current number of snapshots in a single restart set
+      logical AMR_IOSAVE  !< do we write restart files every time mesh is changed
+      common /camr_iiofile/ AMR_IOSTART, AMR_IORSET, AMR_NSNAP
+      common /camr_liofile/ AMR_IOSAVE
+      
+      ! Full restart contains additional fields. I need time information as well
+      real AMR_CHK_TIME(2)
+      common /camr_riofile/ AMR_CHK_TIME
+
+      ! For full restart I need as many pressure lag vectors as velocity ones. 
+      ! However, the lag array for pressure is shorter and its length is set in SOLN,
+      ! which cannot be preprocessed. That is why I save pressure here as well.
+      real AMR_PRLAG(lx2,ly2,lz2,lelv,2)
+      common /camr_prlag/ AMR_PRLAG
+
+      integer AMR_LMAX      !< max refinement level
+      common /camr_iparam/ AMR_LMAX
+      ! module parameters end
+
+      ! p4est mesh info; p4est mesh differs from nek one
+      ! AMR_NELGT,AMR_NELT,AMR_NELV- like nelgt,nelt,nelv
+      ! AMR_NELIT - global offset of element count (T mesh)
+      ! AMR_MLEV - max local quadrant level
+      integer AMR_NELGT,AMR_NELIT,AMR_NELT,AMR_NELV, AMR_MLEV
+      common /camr_mesh_info/ AMR_NELGT,AMR_NELIT,AMR_NELT,
+     $  AMR_NELV,AMR_MLEV
+
+      ! arrays for nek5000 - p4est communication
+      ! AMR_NP_NID - mapping of nek5000 to p4est element distribution
+      ! AMR_PN_NID - mapping of p4est to nek5000 element distribution
+      integer AMR_NP_NID(LELT), AMR_PN_NID(LELT)
+      common /camr_bcomm/ AMR_NP_NID, AMR_PN_NID
+
+      ! variables to store local sizes (element numbers) of old mesh decomposition
+      ! AMR_NELGT_O - old global element number; T-mesh
+      ! AMR_NELT_O - old local element number; T-mesh
+      ! AMR_NELV_O - old local element number; V-mesh
+!     AMR_IMAP - mapping counter
+!     AMR_IMAP_F - full graph bisection counter
+!     AMR_IMAP_R - remapping counter
+!     AMR_IMAP_2 - 2 level partition counter
+!     AMR_IMAP_MOD - frequency of graph bisection
+      integer AMR_NELGT_O, AMR_NELT_O, AMR_NELV_O
+      integer AMR_IMAP, AMR_IMAP_F, AMR_IMAP_R, AMR_IMAP_2, 
+     $        AMR_IMAP_MOD
+      common /camr_hcglb_o/ AMR_NELGT_O, AMR_NELT_O, AMR_NELV_O,
+     $   AMR_IMAP, AMR_IMAP_F, AMR_IMAP_R, AMR_IMAP_2, AMR_IMAP_MOD
+
+      ! arrays to store global element re-mapping to perform refinement on nek5000 side
+      ! AMR_MAP_NR - local number of unchanged elements
+      ! AMR_RFN_NR - local number of refined elements
+      ! AMR_RFN_NR_S - local number of elements to be send; including refined ones
+      ! AMR_CRS_NR - local number of coarsened elements
+      ! AMR_CRS_NR_S - local number of elements to be send for coarsening
+      ! AMR_GLGL_MAP - element number/process id mapping data for unchanged elements (old gl. num., old loc. num., old proc. id)
+      ! AMR_GLGL_RFN - element number/process id mapping data for refined elements (ch. gl. num., old p. gl. num., old p. loc. num., old p. proc. id, ch. pos.)
+      ! AMR_GLGL_CRS - element number/process id mapping data for coarsened elements (new gl. num., old ch. gl. num., old ch. loc. num., old ch. proc. id)
+      integer AMR_MAP_NR, AMR_RFN_NR, AMR_CRS_NR, AMR_RFN_NR_S,
+     $        AMR_CRS_NR_S
+      integer AMR_GLGL_MAP(3,AMR_NVRT*LELT),
+     $        AMR_GLGL_RFN(5,AMR_NVRT*LELT),
+     $        AMR_GLGL_CRS(4,AMR_NVRT,LELT)
+      common /camr_ref_map/ AMR_MAP_NR, AMR_RFN_NR, AMR_CRS_NR,
+     $       AMR_RFN_NR_S, AMR_CRS_NR_S, AMR_GLGL_MAP, AMR_GLGL_RFN,
+     $       AMR_GLGL_CRS
+
+      ! arrays for error estimator
+      ! AMR_MARK - integer mark to refine (1), coarsen (-1) or leave unchanged (0) given block
+      !            for more options see nekamr.h
+      integer AMR_MARK(LELT)
+      ! element level; can be used during refinement/coarsening 
+      integer AMR_LEVEL(LELT)
+      common /camr_mark/ AMR_MARK, AMR_LEVEL
+
+      ! logical variables to correlate mesh modification and redistribution
+      logical AMR_IFRESET
+      common /camr_check/ AMR_IFRESET
+
+!     AMR_REF_CNT - p4est refinement/coarsening count
+!     AMR_EER_CNT - error estimator calulation count
+!     AMR_RIN_CNT - solver reinitialisation count
+      integer AMR_REF_CNT, AMR_EER_CNT, AMR_RIN_CNT
+      common /camr_ref_cnt/ AMR_REF_CNT, AMR_EER_CNT, AMR_RIN_CNT
+
+!!!     arrays storing node multiplicity in stiffness summation for projection and dssum
+!!      real AMR_PR_VMULT(LX1,LY1,LZ1,LELV),
+!!     $     AMR_PR_TMULT(LX1,LY1,LZ1,LELT),
+!!     $     AMR_DS_VMULT(LX1,LY1,LZ1,LELV),
+!!     $     AMR_DS_TMULT(LX1,LY1,LZ1,LELT)
+!!      common /camr_mult/ AMR_PR_VMULT, AMR_PR_TMULT, 
+!!     $                       AMR_DS_VMULT, AMR_DS_TMULT
+
+!     simple timing
+!     AMR_TC - total AMR subroutines
+!     AMR_TCI - initialisation
+!     AMR_TCF - finalisation
+!     AMR_TCE - evolution
+!     AMR_TCER - error estimator
+!     AMR_TCP4 - p4est part
+!     AMR_TCP5 - p4est; mesh/ghost destroy/create
+!     AMR_TCP6 - p4est; refinement fill
+!     AMR_TCP7 - p4est; refine/balance
+!     AMR_TCP8 - p4est; partition
+!     AMR_TCPN - p4est-nek5000 data transfer
+!     AMR_TCPS - mesh size
+!     AMR_TCPD - mesh data
+!     AMR_TCPM - element-processor mapping
+!     AMR_TCPP - call to ParMETIS; full partitioning
+!     AMR_TCPPR - call to ParMETIS; partitioning refinement
+!     AMR_TCPP2 - call to ParMETIS; partitioning 2 level
+!     AMR_TCPR - data redistribution
+!     AMR_TCTD - generation of topology data
+!     AMR_TCL- local operations; refinement, coarsening
+!     AMR_TCC - communication, sorting
+!     AMR_TCS - reinitialise solver
+!     AMR_TCSC - reinitialise solver; coarse grid solver part
+!     AMR_TCRS - restarrt file saving/reading
+!     AMR_T1N, AMR_T2N, AMR_TCN - time spent in nek5000 iterations
+      real AMR_TC, AMR_TCI, AMR_TCF, AMR_TCE, AMR_TCER, AMR_TCP4,
+     $     AMR_TCP5, AMR_TCP6, AMR_TCP7, AMR_TCP8,
+     $	   AMR_TCPN, AMR_TCPS, AMR_TCPD, AMR_TCPM, AMR_TCPR,
+     $     AMR_TCPP, AMR_TCPPR, AMR_TCPP2, AMR_TCTD, AMR_TCL,  
+     $	   AMR_TCC, AMR_TCS, AMR_TCSC, AMR_TCRS, AMR_T1N, AMR_T2N, 
+     $     AMR_TCN
+      common /camr_timing/ AMR_TC, AMR_TCI, AMR_TCF, AMR_TCE, 
+     $     AMR_TCER, AMR_TCP4, AMR_TCP5, AMR_TCP6, AMR_TCP7, 
+     $     AMR_TCP8,
+     $     AMR_TCPN, AMR_TCPS, AMR_TCPD, AMR_TCPM, AMR_TCPR,
+     $     AMR_TCPP, AMR_TCPPR, AMR_TCPP2, AMR_TCTD, AMR_TCL, AMR_TCC,
+     $	   AMR_TCS, AMR_TCSC, AMR_TCRS, AMR_T1N, AMR_T2N, AMR_TCN
+ 

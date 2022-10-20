@@ -1,0 +1,9 @@
+[_IOTRUNC]
+FILETOCOMP           = "turbPipe0.f"
+SCOMP                = yes
+SDECOMP              = yes
+INSITUCOMP           = no
+NUMFILE              = 5
+TRUNCSTEP            = 5
+READSTEP             = 7
+TARGETERR            = 1e-3

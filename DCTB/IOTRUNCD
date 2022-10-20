@@ -1,0 +1,110 @@
+!> @file IOTRUNCD
+!! @ingroup io_tools
+!! @brief Include file for io truncation
+!! @author Adalberto Perez
+!! @date June, 2021
+!=======================================================================
+!     module id and name
+      integer iotrunc_id
+      character*(*) iotrunc_name
+      parameter(iotrunc_name='IOTRUNC')
+
+      
+
+
+!     runtime parameter part
+!     section id
+      integer iotrunc_sec_id
+      real targeterr
+      integer targeterr_id
+      integer numfile
+      integer numfile_id 
+      integer ifile
+      integer ifile_id
+      integer iotruncstep
+      integer iotruncstep_id
+      integer ioreadstep
+      integer ioreadstep_id
+      logical ifscompress
+      logical ifsdecompress
+      logical ifinsitucompress
+      integer ifscompress_id
+      integer ifsdecompress_id
+      integer ifinsitucompress_id
+      character*132 filetocomp
+      integer filetocomp_id
+
+      !initialisation flag
+      logical iotrunc_ifinit
+
+C     for parallel
+      integer lglelr(lelt)
+
+c     Variables to store the transformation
+      real vx_hat(lx1,ly1,lz1,lelv) 
+      real vx_hat_trc(lx1,ly1,lz1,lelv) 
+      real vx_trc(lx1,ly1,lz1,lelv) 
+      real vy_hat(lx1,ly1,lz1,lelv) 
+      real vy_hat_trc(lx1,ly1,lz1,lelv) 
+      real vy_trc(lx1,ly1,lz1,lelv) 
+      real vz_hat(lx1,ly1,lz1,lelv) 
+      real vz_hat_trc(lx1,ly1,lz1,lelv) 
+      real vz_hat_trc_temp(lx1,ly1,lz1,lelv) 
+      real vz_trc(lx1,ly1,lz1,lelv) 
+      real vz_trc_temp(lx1,ly1,lz1,lelv) 
+      real pr_hat(lx2,ly2,lz2,lelv)
+      real pr_hat_trc(lx2,ly2,lz2,lelv)
+      real pr_trc(lx2,ly2,lz2,lelv)
+      real pr_trc_temp(lx2,ly2,lz2,lelv)
+      real vx_hat_trc_temp(lx1,ly1,lz1,lelv) 
+      real vx_trc_temp(lx1,ly1,lz1,lelv) 
+      real vy_hat_trc_temp(lx1,ly1,lz1,lelv) 
+      real vy_trc_temp(lx1,ly1,lz1,lelv) 
+
+
+c     Variables used in the creation of operators
+c     For the velocities
+      real trunc_op(lx1,lx1)           !Op modal, filter
+      real trunc_opt(lx1,lx1)	       !Op transposed
+      real trunc_filter_op(lx1,lx1)    !Op modal, filter,back to phys
+      real trunc_filter_opt(lx1,lx1)   !Op transposed
+      real trans_v(40*40)
+      real trans_v_pr(40*40)
+      
+
+c     For the pressure
+      real trunc_op_pr(lx1,lx1)          !Op modal, filter
+      real trunc_opt_pr(lx1,lx1)	 !Op transposed
+      real trunc_filter_op_pr(lx1,lx1)   !Op modal, filter,back to phys
+      real trunc_filter_opt_pr(lx1,lx1)  !Op transposed
+
+      !     common blocks 
+      common /iotrunc_trunc/ vx_trc,vx_hat_trc, vy_trc,vy_hat_trc,
+     &                       vz_trc, vz_hat_trc, pr_hat_trc,pr_trc
+
+      common /iotrunc/ vx_hat, vy_hat, vz_hat, pr_hat, trunc_op, 
+     &                 trunc_opt, trunc_filter_op, trunc_filter_opt, 
+     &                 trunc_op_pr, trunc_opt_pr, trunc_filter_op_pr,
+     &                 trunc_filter_opt_pr,vz_trc_temp,trans_v,
+     &                 trans_v_pr,vz_hat_trc_temp, vx_trc_temp,
+     &                 vx_hat_trc_temp, vy_trc_temp, vy_hat_trc_temp,
+     &                 pr_trc_temp
+
+      common /iotrunc_runtime/ iotrunc_id, iotrunc_sec_id, 
+     &                         ifile_id, numfile, numfile_id,
+     &                         targeterr_id,
+     &                         iotruncstep, iotruncstep_id,  
+     &                         ioreadstep, ioreadstep_id,  
+     &                         ifscompress_id, ifsdecompress_id,
+     &                         ifinsitucompress_id,filetocomp_id
+
+      common /iotrunc_runtime_i/ lglelr
+
+      common /iotrunc_runtime_r/ targeterr
+
+      common /iotrunc_runtime_c/ filetocomp
+
+      common /iotrunc_runtime_l/ ifscompress, ifsdecompress,
+     &                            ifinsitucompress
+
+      common /iotrunc_initia/ iotrunc_ifinit

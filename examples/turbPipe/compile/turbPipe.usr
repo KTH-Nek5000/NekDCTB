@@ -1,0 +1,221 @@
+#define RAD  1.0         !pipe radius
+#define ZLENPIPE  8.0   !pipe length
+!-----------------------------------------------------------------------
+!
+!     user subroutines required by nek5000
+!
+!     Parameters used by this set of subroutines:
+!
+!-----------------------------------------------------------------------
+      subroutine uservp (ix,iy,iz,ieg)
+      include 'SIZE'
+      include 'NEKUSE'          ! UDIFF, UTRANS
+
+      UDIFF =0.0
+      UTRANS=0.0
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine userf  (ix,iy,iz,ieg)
+      
+      include 'SIZE'
+      include 'NEKUSE'          ! FF[XYZ]
+      include 'PARALLEL'
+
+      integer ix,iy,iz,ieg
+
+      ffx = 0.0
+      ffy = 0.0
+      ffz = 0.0
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine userq  (ix,iy,iz,ieg)
+      include 'SIZE'
+      include 'NEKUSE'          ! QVOL
+
+      QVOL   = 0.0
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine userchk
+!      implicit none
+      include 'SIZE'            !
+      include 'TSTEP'           ! ISTEP, lastep, time
+      include 'INPUT'           ! IF3D, PARAM
+      include 'SOLN'   
+      
+!     start framework
+      if (ISTEP.eq.0) call frame_start
+
+!     monitor simulation
+      call frame_monitor
+
+      call trunc_main()
+
+!     finalise framework
+      if (ISTEP.eq.NSTEPS.or.LASTEP.eq.1) then
+         call frame_end      
+      endif
+     
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine userbc (ix,iy,iz,iside,eg)
+      include 'SIZE'
+      include 'NEKUSE'          ! UX, UY, UZ, TEMP, X, Y
+
+!     velocity
+      ux =  0.0
+      uy =  0.0
+      uz =  0.0
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine useric (ix,iy,iz,ieg)
+      implicit none
+      
+      include 'SIZE'
+      include 'INPUT'
+      include 'TSTEP'           ! PI
+      include 'NEKUSE'          ! UX, UY, UZ, TEMP, Z
+
+!     argument list
+      integer ix,iy,iz,ieg
+
+!     local variables
+      real C, k, kth, kz,alpha,beta,cons,eps,Ri,rR,xL1,zL1
+      real rp,ReTau, th, u_axial, u_th, u_rho, kx, dr
+      integer meanProfType
+
+c     Define the initial mean profile
+      meanProfType=1;   !1: parabolic velocity profile
+                        !2: Reichardt law at a given ReTau
+
+ 
+c     Parabolic profile ub=1.0
+      if (meanProfType.eq.1) then
+         r   = sqrt(y*y+x*x)
+         Ri   = 1.0      !pipe radius
+         rR   = (r*r)/(Ri*Ri)
+         cons = 2.0
+         uz   = cons*(1-rR)
+      else
+c        Reichardt function
+         ReTau = 360.0
+         C      = 5.17
+         k      = 0.41
+
+         r   = sqrt(y*y+x*x)
+         rp = (1.0-r)*ReTau
+         uz  = 1/k*log(1+k*rp) + (C - (1/k)*log(k)) *
+     $      (1 - exp(-rp/11.0) - rp/11.0*exp(-rp/3))
+         uz  = uz * ReTau*param(2)
+      endif
+
+c     perturb
+      eps  = 3e-2
+      kz   = 23
+      kth  = 13
+
+
+      th = atan2(y,x)
+
+
+      xL1=(2.0*PI)
+      zL1=ZLENPIPE
+      alpha = kz * 2*PI/zL1
+      beta  = kth * 2*PI/xL1
+      dr = 0.2
+
+      u_axial  =      eps*beta  * sin(alpha*z)*cos(beta*th)
+      u_th     =     - eps  * alpha     * r * cos(alpha*z)*sin(beta*th)
+      if (r>dr) then
+         u_rho    =     eps*alpha * sin(alpha*z)*sin(beta*th) * (1/r)
+      else
+         u_rho   = eps*alpha*sin(alpha*z)*sin(beta*th)*(1/dr)
+      endif
+
+      ux = cos(th)*u_rho -r*sin(th)*u_th
+      uy = sin(th)*u_rho +r*cos(th)*u_th
+      uz = uz + u_axial
+
+      temp=0
+
+      return
+      end
+
+
+!----------------------------------------------------------------------
+      subroutine usrdat
+      include 'SIZE'
+
+      call setbc(3,1,'W  ')   ! wall
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine usrdat2
+      include 'SIZE'
+
+
+      
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine usrdat3
+      implicit none
+      include 'SIZE'
+      include 'INPUT'
+
+      ! To set up forcing in z-direction
+      param(54) = -3 !main flow direction: z-direction
+      param(55) = 1  !Ubar
+      
+      return
+      end
+
+!======================================================================
+!> @brief Register user specified modules
+      subroutine frame_usr_register
+      implicit none
+
+      include 'SIZE'
+      include 'FRAMELP'
+!-----------------------------------------------------------------------
+!     register modules
+      call io_register
+      call trunc_register
+
+      return
+      end subroutine
+!======================================================================
+!> @brief Initialise user specified modules
+      subroutine frame_usr_init
+      implicit none
+
+      include 'SIZE'
+      include 'FRAMELP'
+      include 'SOLN'
+!-----------------------------------------------------------------------
+!     initialise modules
+      call trunc_init
+
+      return
+      end subroutine
+!======================================================================
+!> @brief Finalise user specified modules
+      subroutine frame_usr_end
+      implicit none
+
+      include 'SIZE'
+      include 'FRAMELP'
+!-----------------------------------------------------------------------
+!     finalise modules
+      
+      return
+      end subroutine
