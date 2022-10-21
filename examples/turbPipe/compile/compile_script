@@ -36,7 +36,7 @@ cp -r ${COMPRESS_SRC}/config .
 cp -r config/synch_config.xml config/config.xml
 
 # In nek source, compile the asynchronous version
-cp ${NEK_SOURCE_ROOT}/core/3rd_party/single_synch_nek_adios2.cpp ${NEK_SOURCE_ROOT}/core/3rd_party/nek_adios2.cpp
+cp ${NEK_SOURCE_ROOT}/core/3rd_party/opt/single_synch_nek_adios2.cpp ${NEK_SOURCE_ROOT}/core/3rd_party/nek_adios2.cpp
 
 # arguments
 args=("$@")
