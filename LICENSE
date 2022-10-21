@@ -91,3 +91,21 @@ The views and opinions of authors expressed
 herein do not necessarily state or reflect those of the United States 
 Government or UCHICAGO ARGONNE, LLC, and shall 
 not be used for advertising or product endorsement purposes.
+
+The source code derived from ADIOS2 is distributed under the
+following terms:
+
+
+Copyright 2019 UT-BATTELLE, LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
