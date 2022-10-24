@@ -29,9 +29,9 @@ module load cray-mpich-ucx
 Nek5000 is a FORTRAN77 solver that must be compiled for each case to be run, therefore the tools must be compiled as well. The third party libraries, like ADIOS2, do not need to be compiled everytime changes happen in the code, therefore we recomend that this is done only once.
 
 Just as for any other used-defined function in Nek5000, 3 main files must be modified to be able to use the toolbox:
-1. [```compile_script```](./pages/compile_script.md)
-2. [```makefile_usr.inc```](./pages/makefile_usr_inc.md)
-3. [```<casename>.usr```](./pages/casename_usr.md)
+1. [```compile_script```](./compile_script.md)
+2. [```makefile_usr.inc```](./makefile_usr_inc.md)
+3. [```<casename>.usr```](./casename_usr.md)
 
 Templates of the modified files can be found at the [DCTB](https://github.com/KTH-Nek5000/NekDCTB/tree/main/DCTB) and [examples](https://github.com/KTH-Nek5000/NekDCTB/blob/main/examples/turbPipe/compile/) folders, however, a list of modifications to the files can be found by using the hyperlinks.
 
