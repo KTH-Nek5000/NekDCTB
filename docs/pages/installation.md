@@ -28,50 +28,24 @@ module load cray-mpich-ucx
 ## Compiling Nek5000
 Nek5000 is a FORTRAN77 solver that must be compiled for each case to be run, therefore the tools must be compiled as well. The third party libraries, like ADIOS2, do not need to be compiled everytime changes happen in the code, therefore we recomend that this is done only once.
 
-3 main files must be modified to be able to use the toolbox.
-1. ```compile_script```
-2. ```makefile_usr.inc```
-3. ```<casename>.usr```
+Just as for any other used-defined function in Nek5000, 3 main files must be modified to be able to use the toolbox:
+1. [```compile_script```](./pages/compile_script.md)
+2. [```makefile_usr.inc```](./pages/makefile_usr_inc.md)
+3. [```<casename>.usr```](./pages/casename_usr.md)
 
+Templates of the modified files can be found at the [DCTB](https://github.com/KTH-Nek5000/NekDCTB/tree/main/DCTB) and [examples](https://github.com/KTH-Nek5000/NekDCTB/blob/main/examples/turbPipe/compile/) folders, however, a list of modifications to the files can be found by using the hyperlinks.
 
-### compile_script
-We recomend to use a compile script as the one shown in the [examples](https://github.com/KTH-Nek5000/NekDCTB/blob/main/examples/turbPipe/compile/compile_script) folder. The structure is the same as would be needed to compile Nek5000 but has the following aditions:
-  1. The path to the data compression tool box must be specified.
-  ```sh
-  export COMPRESS_SRC="$PWD/../../../DCTB"
-  export COMPRESS_INC=" -I"${COMPRESS_SRC}
-  COMPRESS_INC+=" -I"${COMPRESS_SRC}"/framework_files"
-  ```
-  2. The folders with the subroutines must be added to the shearch space of the fortran compiler.
-  ```sh
-  export FC="mpifort"${COMPRESS_INC}
-  ```
-  3. The following user defined functions must included in the compilation of Nek5000. Users of the [KTH-Framework](https://github.com/KTH-Nek5000/KTH_Framework) will notice that the first row correspond to supporting files. The data compression toolbox itself is contained in ```io_trunc.o```
-  ```sh
-  export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o"
-  USR+=" io_trunc.o sperri_trunc.o"
-  ```
-  4. Finally, some files from the toolbox folder must be copied into the compile script. These are files that will later be used by ADIOS2 for runtime confugiration of  compression.
-  ```sh
-  cp -r ${COMPRESS_SRC}/config .
-  cp -r config/synch_config.xml config/config.xml
-  cp ${NEK_SOURCE_ROOT}/core/3rd_party/opt/single_synch_nek_adios2.cpp ${NEK_SOURCE_ROOT}/core/3rd_party/nek_adios2.cpp
-  ```
-### makefile_usr.inc
-The ```makefile_usr.inc``` must be modified to include the user functions. This for the toolbox to work, we must include the following in the file:
+Having modified all the files accordingly, compilation follows by ensuring that the ```SIZE``` file is present in the folder and executing the command:
 ```sh
-$(OBJDIR)/frame.o           :${COMPRESS_SRC}/framework_files/frame.f;              $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrlog_block.o   :${COMPRESS_SRC}/framework_files/mntrlog_block.f;      $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrlog.o         :${COMPRESS_SRC}/framework_files/mntrlog.f;            $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrtmr_block.o   :${COMPRESS_SRC}/framework_files/mntrtmr_block.f;      $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrtmr.o         :${COMPRESS_SRC}/framework_files/mntrtmr.f;            $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/rprm_block.o      :${COMPRESS_SRC}/framework_files/rprm_block.f;         $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/rprm.o            :${COMPRESS_SRC}/framework_files/rprm.f;               $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/io_tools_block.o  :${COMPRESS_SRC}/framework_files/io_tools_block.f;     $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/io_tools.o        :${COMPRESS_SRC}/framework_files/io_tools.f;           $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/sperri_trunc.o        :${COMPRESS_SRC}/framework_files/sperri_trunc.f;           $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/io_trunc.o        :${COMPRESS_SRC}/io_trunc.f;                           $(F77) -c $(FL2) -I./ $< -o $@
+./compile_script --all
 ```
+
+If ```ADIOS2``` has not been compiled, the following message will prompt and ADIOS2 will be compiled:
+```sh
+Message from adios2
+```
+
+In this case, after the compilation of ```ADIOS2```, Nek5000 will not automatically restart the compilation of the case, therefore after all the 3rd party libraries have been compiled, the user must run ```./compile_script --all``` once again to compile the case. If the process is succesful, the executable  ```Nek5000``` and the folder  ```config``` will be added to the  ```compile``` sub-directory.
 
 
 ### Linking Nek5000 with ADIOS2
