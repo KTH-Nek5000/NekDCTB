@@ -44,7 +44,7 @@ If ```ADIOS2``` has not been compiled, the following message will prompt and ADI
 ```sh
 compression requires ADIOS2 to be build before compilation of Nek5000
 Turning to -build-dep mode
-building 3rd-party dependencies ...
+building 3rd-party dependencies
 ```
 
 In this case, after the compilation of ```ADIOS2```, Nek5000 will not automatically restart the compilation of the case, therefore after all the 3rd party libraries have been compiled, the user must run ```./compile_script --all``` once again to compile the case. If the process is succesful, the executable  ```Nek5000``` and the folder  ```config``` will be added to the  ```compile``` sub-directory.
