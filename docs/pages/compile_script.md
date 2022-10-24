@@ -10,7 +10,12 @@ We recomend to use a compile script as the one shown in the [examples](https://g
   ```sh
   export FC="mpifort"${COMPRESS_INC}
   ```
-  3. The following user defined functions must included in the compilation of Nek5000. Users of the [KTH-Framework](https://github.com/KTH-Nek5000/KTH_Framework) will notice that the first row correspond to supporting files. The data compression toolbox itself is contained in ```io_trunc.o```
+  3. ADIOS2 instrumentation must be activated. This is done by including the following flag in the preprocesor list.
+  ```sh
+  export PPLIST="ADIOS2" 
+  ```
+  
+  4. The following user defined functions must included in the compilation of Nek5000. Users of the [KTH-Framework](https://github.com/KTH-Nek5000/KTH_Framework) will notice that the first row correspond to supporting files. The data compression toolbox itself is contained in ```io_trunc.o```
   ```sh
   export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o"
   USR+=" io_trunc.o sperri_trunc.o"
