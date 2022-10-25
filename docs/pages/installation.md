@@ -58,7 +58,7 @@ mpirun -n 4 ./nek5000
 ```
 
 ### Linking Nek5000 with ADIOS2
-In this repository we include a [Nek5000](https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000) version that has been modified for linking with the ADIOS2 library. For the sake of convenience, we have included a tested version of ADIOS2 under the [/Nek5000/3rd_party/adios2](https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/3rd_party/adios2) that can be easily installed by executing the install.sh script in the folder. If a user wish to use their own version of Nek5000, some files in the source need to be modify for the linking to occur. Such files can be readily checked and copied from the Nek5000 version shipped in this repository.
+In this repository we include a [Nek5000](https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000) version that has been modified for linking with the ADIOS2 library. For the sake of convenience, we have included a tested version of ADIOS2 under the [/Nek5000/3rd_party/adios2](https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/3rd_party/adios2) that can be easily installed by executing the install.sh script in the folder. If a user wish to use their own version of Nek5000, some files in the source need to be modified for the linking to occur. Such files can be readily checked and copied from the Nek5000 version shipped in this repository.
 
 The following files were modified in the [core](https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core):
 * [```drive.f```](https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/drive.f)
