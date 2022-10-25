@@ -49,6 +49,15 @@ building 3rd-party dependencies
 
 In this case, after the compilation of ```ADIOS2```, Nek5000 will not automatically restart the compilation of the case, therefore after all the 3rd party libraries have been compiled, the user must run ```./compile_script --all``` once again to compile the case. If the process is succesful, the executable  ```Nek5000``` and the folder  ```config``` will be added to the  ```compile``` sub-directory.
 
+## Running Nek5000
+Prior to running, the behaviour of the compression toolbox can be modified by changing the runtime parameters that need to be included in the ```<casename>.par``` file. A template of the of the aditions to this file can be found in the [DCTB](https://github.com/KTH-Nek5000/NekDCTB/tree/main/DCTB) and [examples](https://github.com/KTH-Nek5000/NekDCTB/blob/main/examples/turbPipe/compile/) folder and a description of each parameter can be found following [this link]((./casename_par.md))
+
+To run Nek5000 it is necesary that the ```Nek5000``` executable and the ```config``` folder are copied from the compilation folder to the run folder. Executing Nek5000 with the data compression toolbox enabled is as simple as executing, for example:
+```sh
+mpirun -n 4 ./nek5000
+```
+
+
 
 ### Linking Nek5000 with ADIOS2
 Nek5000 is a FORTRAN77 solver that must be compiled for each case to be run, therefore the tools must be compiled as well. The third party libraries, like ADIOS2, do not need to be compiled everytime changes happen in the code, therefore we recomend that this is done only once. In this repository we include a [Nek5000](https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000) version that has been modified for linkage with the ADIOS2 library. For the sake of convenience, we have included a tested version of ADIOS2 under the [/Nek5000/3rd_party/adios2](https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/3rd_party/adios2) that can be easily installed by executing the install.sh script in the folder. We will list the changes done to Nek5000 in later sections to facilitate the integration with users that want to use their own versions of the solver. 
