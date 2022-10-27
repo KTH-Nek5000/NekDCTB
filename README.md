@@ -5,4 +5,4 @@ NekDCTB is a data compression toolbox for in-situ and static data compression of
 
 
 ## Documentation
-The documentation and installation procedures can be found at: https://kth-nek5000.github.io/NekDCTB/
+The documentation and installation procedures can be found [here](./docs/index.md)
