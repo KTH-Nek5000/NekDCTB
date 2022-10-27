@@ -6,6 +6,8 @@ c-----------------------------------------------------------------------
       call catalyst_init()
 #elif ADIOS2
       call adios2_init()
+#elif ASYNC_CATALYST
+      call async_catalyst_init()
 #endif
       end
 c-----------------------------------------------------------------------
@@ -16,6 +18,8 @@ c-----------------------------------------------------------------------
       call catalyst_process()
 #elif ADIOS2
       call adios2_write()
+#elif ASYNC_CATALYST
+      call async_catalyst_write()
 #endif
       end
 c-----------------------------------------------------------------------
@@ -26,6 +30,8 @@ c-----------------------------------------------------------------------
       call catalyst_end()
 #elif ADIOS2
       call adios2_end()
+#elif ASYNC_CATALYST
+      call async_catalyst_end()
 #endif
       end
 c-----------------------------------------------------------------------

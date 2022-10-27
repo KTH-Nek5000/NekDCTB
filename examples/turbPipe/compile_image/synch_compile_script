@@ -1,0 +1,82 @@
+#!/bin/bash
+
+function error_quit {
+    echo -e "$@"
+    echo
+    echo -e 'Usage:'
+    echo -e './compile_script --clean'
+    echo -e '   To clean build direcrtory. Makenek will ask for cleaning 3rd-party libraries.'
+    echo
+    echo -e './compile_script --all'
+    echo -e '   To compile the code.'
+    exit 1
+}
+
+# Add paths to the compression tool
+export COMPRESS_SRC="$PWD/../../../DCTB"
+export COMPRESS_INC=" -I"${COMPRESS_SRC}
+COMPRESS_INC+=" -I"${COMPRESS_SRC}"/framework_files"
+
+# Nek5000 parameters at the end of Ftn compiler, add where to find the tools
+export CASE="turbPipe"
+export NEK_SOURCE_ROOT="$PWD/../../../Nek5000"
+export FC="mpifort"${COMPRESS_INC}
+export CC="mpicc"
+export CXX="mpicxx"
+export FFLAGS="-mcmodel=large"
+export CFLAGS=""
+export PPLIST="ADIOS2"
+export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o"
+USR+=" io_trunc.o sperri_trunc.o"
+export USR_LFLAGS=""
+
+export ASYNC_CATALST=0
+export CATALYST=1
+
+export OSMESA=/path/to/OSMESA
+
+export LIBDIR=$OSMESA/lib:$LIBDIR
+export LD_LIBRARY_PATH=$OSMESA/lib:$LD_LIBRARY_PATH
+export LD_RUN_PATH=$OSMESA/lib:$LD_RUN_PATH
+
+export OSMESA_INCLUDE_DIR=$OSMESA/include
+export OSMESA_LIBRARY=$OSMESA/lib
+
+export PARAVIEW=/path/to/paraview
+export PATH=$PARAVIEW/bin:$PATH
+export LD_LIBRARY_PATH=$PARAVIEW/lib:$LD_LIBRARY_PATH
+
+export PYTHONPATH=$PARAVIEW/lib/python3.8/site-packages:$PYTHONPATH
+export PYTHONPATH=$PARAVIEW/lib/python3.8/site-packages/paraview/:$PYTHONPATH
+
+export CATALYST=1
+export CATALYST_LIBS+=`paraview-config -l -c Catalyst`
+export CATALYST_INCS=`paraview-config -f -c Catalyst`
+
+# arguments
+args=("$@")
+argsnr=$#
+
+# check arguments
+# parameters number check
+if [ $[argsnr] -ne 1 ]; then
+    error_quit 'Wrong arguments number!'
+fi
+
+for il in "$@"
+do
+case $il in
+        --clean)
+		rm -r config
+		${NEK_SOURCE_ROOT}/bin/makenek clean
+                shift
+                ;;
+        --all)
+                ${NEK_SOURCE_ROOT}/bin/makenek ${CASE}
+                shift
+                ;;
+        *) 
+                error_quit 'Wrong argument.'
+                ;;
+esac
+done
