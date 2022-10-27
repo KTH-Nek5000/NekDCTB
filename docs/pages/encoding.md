@@ -1,4 +1,4 @@
-## Lossless compression step
+## Lossless compression with BZIP2
 
 For the lossless compression step, we use the library ADIOS2
 [@godoy2020adios] in order to have a data management framework that
