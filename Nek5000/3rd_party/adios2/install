@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VER=1.0
+VER=2.7.1
 CHKSUM=ed8737d82ef4c97b9dfa2fd6e5134226f24c9b0b
 
 if [ "$1" == "clean" ]; then
