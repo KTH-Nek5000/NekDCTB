@@ -8,7 +8,7 @@ https://github.com/KTH-Nek5000/InSituPackage
 
 
 3. Compile the asynchronous in-situ image generation:   
-3.1 Change the `PARAVIEW` an `OSMESA` path in `asynch_compile_script` and `insitu/make.sh`   
+3.1 Change the `PARAVIEW` an `OSMESA` path in `insitu/make.sh`   
 3.2 Compile with `asynch_compile_script`
 
 File changed compared to the original Nek5000:
