@@ -24,6 +24,11 @@ provide a stand-alone toolbox.
    ./pages/list_of_codes
    ./pages/background
    ./pages/results
+   
+.. toctree::
+   :maxdepth: 3
+   :caption: Supporting files:
+   
    ./pages/casename_par
    ./pages/casename_usr
    ./pages/compile_script
