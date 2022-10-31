@@ -28,6 +28,4 @@ provide a stand-alone toolbox.
    ./pages/casename_usr
    ./pages/compile_script
    ./pages/makefile_usr_inc
-   ./pages/truncation
-   ./pages/encoding
 

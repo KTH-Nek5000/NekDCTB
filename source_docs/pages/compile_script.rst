@@ -1,3 +1,5 @@
+.. _compile_script:
+
 compile_script
 ==============
 
