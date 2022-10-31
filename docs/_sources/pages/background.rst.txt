@@ -1,8 +1,6 @@
-Theoretical Background
-======================
-
-Entropy in information theory
------------------------------
+============================================
+Entropy and information theory
+============================================
 
 Based on `Li et
 al. <https://onlinelibrary.wiley.com/doi/abs/10.1111/cgf.13336>`__ in
@@ -32,8 +30,9 @@ data set is high, such that :math:`H` is high itself, then the size of
 data set :math:`S` after being optimally written to the disk might still
 be large.
 
+==================================================================
 Steps for data compression in turbulent fields.
------------------------------------------------
+==================================================================
 
 Given that turbulence is a multi-scale and seemlingly random phenomenon,
 data sets that describe it tend to have quite a large entropy. Making
@@ -43,7 +42,8 @@ steps that reduce the entropy, generally converting the compression into
 a lossy process.
 
 Lossy data truncation
------------------------------------------------
+------------------------------------
+
 
 There are many ways to perform lossy compression, however,
 transfromation-based aproaches are among the most used. JPEG for image
@@ -54,7 +54,7 @@ space while controlling the error. This is benefitial given that the
 user has total control in the fidelity of the data after it is stored.
 
 Legendre Polynomials
---------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Spectral element solvers such as Nek5000, Neko and NekRS by discretize the domains with high
 order finite elements, each of them containing a number of
@@ -128,7 +128,7 @@ signal, and then analyze what needs to be stored in order for the
 algorithms to effectively compress.
 
 Down-sampling
---------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In signal processing, often times the high frequencies can not be
 perceived by humans or are not relevant for the signal representation in
@@ -192,7 +192,7 @@ entries kept while the extra zeros will represent only a minor storage
 overhead.
 
 Discreet Legendre truncation
---------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 [@Otero2018] recognized the use of down-sampling but extended it for
 turbulence in spectral element methods. They realized that although
@@ -261,7 +261,7 @@ in regions with high fluctuations, where the spectrum is flatter, less
 error is allowed to mantain fidelity over compression.
 
 Lossless data encoding
------------------------------------------------
+------------------------------------
 
 After the entropy of the data set has been reduced by a lossy truncation
 step. It can be losslessly compressed without introducing new errors by

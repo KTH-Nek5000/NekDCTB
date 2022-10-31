@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Theoretical Background &mdash; NekDCTB 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>Entropy and information theory &mdash; NekDCTB 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
@@ -43,16 +43,20 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="list_of_codes.html">List of core codes.</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Theoretical Background</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#entropy-in-information-theory">Entropy in information theory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#steps-for-data-compression-in-turbulent-fields">Steps for data compression in turbulent fields.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#lossy-data-truncation">Lossy data truncation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#legendre-polynomials">Legendre Polynomials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#down-sampling">Down-sampling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Entropy and information theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#steps-for-data-compression-in-turbulent-fields">Steps for data compression in turbulent fields.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lossy-data-truncation">Lossy data truncation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#legendre-polynomials">Legendre Polynomials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#down-sampling">Down-sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#lossless-data-encoding">Lossless data encoding</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption"><span class="caption-text">Supporting files:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="casename_par.html">&lt;casename&gt;.par</a></li>
 <li class="toctree-l1"><a class="reference internal" href="casename_usr.html">&lt;casename&gt;.usr</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compile_script.html">compile_script</a></li>
@@ -73,7 +77,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Theoretical Background</li>
+      <li>Entropy and information theory</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/pages/background.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -83,10 +87,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="theoretical-background">
-<h1>Theoretical Background<a class="headerlink" href="#theoretical-background" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="entropy-in-information-theory">
-<h2>Entropy in information theory<a class="headerlink" href="#entropy-in-information-theory" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="entropy-and-information-theory">
+<h1>Entropy and information theory<a class="headerlink" href="#entropy-and-information-theory" title="Permalink to this headline">¶</a></h1>
 <p>Based on <a class="reference external" href="https://onlinelibrary.wiley.com/doi/abs/10.1111/cgf.13336">Li et
 al.</a> in
 information theory, the shannon entropy <span class="math notranslate nohighlight">\(H\)</span> is an optimal lower
@@ -111,14 +113,13 @@ data set <span class="math notranslate nohighlight">\(S\)</span> after being opt
 be large.</p>
 </div>
 <div class="section" id="steps-for-data-compression-in-turbulent-fields">
-<h2>Steps for data compression in turbulent fields.<a class="headerlink" href="#steps-for-data-compression-in-turbulent-fields" title="Permalink to this headline">¶</a></h2>
+<h1>Steps for data compression in turbulent fields.<a class="headerlink" href="#steps-for-data-compression-in-turbulent-fields" title="Permalink to this headline">¶</a></h1>
 <p>Given that turbulence is a multi-scale and seemlingly random phenomenon,
 data sets that describe it tend to have quite a large entropy. Making
 lossless compression ineficient. It is for this reason that in order to
 achieve high compression ratios, one alternatie is to first include
 steps that reduce the entropy, generally converting the compression into
 a lossy process.</p>
-</div>
 <div class="section" id="lossy-data-truncation">
 <h2>Lossy data truncation<a class="headerlink" href="#lossy-data-truncation" title="Permalink to this headline">¶</a></h2>
 <p>There are many ways to perform lossy compression, however,
@@ -128,9 +129,8 @@ Nek5000 is distributed in a mesh with certain characteristics, the
 aproach taken in this library was to truncate the data in the legendre
 space while controlling the error. This is benefitial given that the
 user has total control in the fidelity of the data after it is stored.</p>
-</div>
 <div class="section" id="legendre-polynomials">
-<h2>Legendre Polynomials<a class="headerlink" href="#legendre-polynomials" title="Permalink to this headline">¶</a></h2>
+<h3>Legendre Polynomials<a class="headerlink" href="#legendre-polynomials" title="Permalink to this headline">¶</a></h3>
 <p>Spectral element solvers such as Nek5000, Neko and NekRS by discretize the domains with high
 order finite elements, each of them containing a number of
 Gauss-Lobatto-Legendre collocation points that allow them to perform
@@ -183,7 +183,7 @@ signal, and then analyze what needs to be stored in order for the
 algorithms to effectively compress.</p>
 </div>
 <div class="section" id="down-sampling">
-<h2>Down-sampling<a class="headerlink" href="#down-sampling" title="Permalink to this headline">¶</a></h2>
+<h3>Down-sampling<a class="headerlink" href="#down-sampling" title="Permalink to this headline">¶</a></h3>
 <p>In signal processing, often times the high frequencies can not be
 perceived by humans or are not relevant for the signal representation in
 physical space. Turbulence is not an exception to this characteristic,
@@ -235,7 +235,7 @@ entries kept while the extra zeros will represent only a minor storage
 overhead.</p>
 </div>
 <div class="section" id="discreet-legendre-truncation">
-<h2>Discreet Legendre truncation<a class="headerlink" href="#discreet-legendre-truncation" title="Permalink to this headline">¶</a></h2>
+<h3>Discreet Legendre truncation<a class="headerlink" href="#discreet-legendre-truncation" title="Permalink to this headline">¶</a></h3>
 <p>[&#64;Otero2018] recognized the use of down-sampling but extended it for
 turbulence in spectral element methods. They realized that although
 higher frequencies should have the lower energies (lower magnitude
@@ -285,6 +285,7 @@ Noise ratio:</p>
 localized manner where more compression is allowed, in such a way that
 in regions with high fluctuations, where the spectrum is flatter, less
 error is allowed to mantain fidelity over compression.</p>
+</div>
 </div>
 <div class="section" id="lossless-data-encoding">
 <h2>Lossless data encoding<a class="headerlink" href="#lossless-data-encoding" title="Permalink to this headline">¶</a></h2>
