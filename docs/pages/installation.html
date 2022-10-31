@@ -57,10 +57,6 @@
 <li class="toctree-l1"><a class="reference internal" href="casename_usr.html">&lt;casename&gt;.usr</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compile_script.html">compile_script</a></li>
 <li class="toctree-l1"><a class="reference internal" href="makefile_usr_inc.html">makefile_usr.inc</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html">Legendre Polynomials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html#down-sampling">Down-sampling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="encoding.html">Lossless compression with BZIP2</a></li>
 </ul>
 
         </div>
@@ -136,35 +132,31 @@ the folder or at Nek5000 compile time (see sections below). If a user
 wish to use their own version of Nek5000, some files in the source need
 to be modified for the linking to occur. Such files can be readily
 checked and copied from the Nek5000 version shipped in this repository.</p>
-<p>The following files were modified in the
-<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core">core</a>:
-*
-<code class="docutils literal notranslate"><span class="pre">`drive.f</span></code> &lt;<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/drive.f">https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/drive.f</a>&gt;`__
-*
-<code class="docutils literal notranslate"><span class="pre">`makenek.inc</span></code> &lt;<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makenek.inc">https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makenek.inc</a>&gt;`__
-*
-<code class="docutils literal notranslate"><span class="pre">`makefile.template</span></code> &lt;<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makefile.template">https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makefile.template</a>&gt;`__</p>
-<p>The following files were added to the
-<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core/3rd_party">3rd_party</a>
-folder and contain the ADIOS2 subroutines. *
-<code class="docutils literal notranslate"><span class="pre">`nek_in_situ.f</span></code> &lt;<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_in_situ.f">https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_in_situ.f</a>&gt;`__
-*
-<code class="docutils literal notranslate"><span class="pre">`adios2.f</span></code> &lt;<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/adios2.f">https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/adios2.f</a>&gt;`__
-*
-<code class="docutils literal notranslate"><span class="pre">`nek_adios2.cpp</span></code> &lt;<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_adios2.cpp">https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_adios2.cpp</a>&gt;`__</p>
+<p>The following files were modified in the <a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core">core</a>:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/drive.f">drive.f</a></li>
+<li><a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makenek.inc">makenek.inc</a></li>
+<li><a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makefile.template">makefile.template</a></li>
+</ul>
+<p>The following files were added to the <a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core/3rd_party">3rd_party</a>
+folder and contain the ADIOS2 subroutines.</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_in_situ.f">nek_in_situ.f</a></li>
+<li><a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/adios2.f">adios2.f</a></li>
+<li><a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_adios2.cpp">nek_adios2.cpp</a></li>
+</ul>
 </div>
 <div class="section" id="compiling-nek5000-with-adios2">
 <h3>Compiling Nek5000 with ADIOS2<a class="headerlink" href="#compiling-nek5000-with-adios2" title="Permalink to this headline">¶</a></h3>
 <!---
 Nek5000 is a FORTRAN77 solver that must be compiled for each case to be run, therefore the tools must be compiled as well. The third party libraries, like ADIOS2, do not need to be compiled everytime changes happen in the code, therefore we recomend that this is done only once.
 ---><p>Just as for any other used-defined function in Nek5000, 3 main files
-must be modified to be able to use the toolbox: 1. <span class="xref std std-ref">compile_script</span></p>
-<blockquote>
-<div><ol class="arabic simple" start="2">
-<li></li>
+must be modified to be able to use the toolbox:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="compile_script.html#compile-script"><span class="std std-ref">compile_script</span></a></li>
+<li><a class="reference internal" href="makefile_usr_inc.html#makefile-usr-inc"><span class="std std-ref">makefile_usr.inc</span></a></li>
+<li><a class="reference internal" href="casename_usr.html#casename-usr"><span class="std std-ref">&lt;casename&gt;.usr</span></a></li>
 </ol>
-</div></blockquote>
-<p><a class="reference internal" href="makefile_usr_inc.html#makefile-usr-inc"><span class="std std-ref">makefile_usr.inc</span></a> 3. <a class="reference internal" href="casename_usr.html#casename-usr"><span class="std std-ref">&lt;casename&gt;.usr</span></a></p>
 <p>Templates of the modified files can be found at the
 <a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/tree/main/DCTB">DCTB</a> and
 <a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/examples/turbPipe/compile/">examples</a>

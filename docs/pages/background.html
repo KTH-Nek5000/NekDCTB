@@ -45,21 +45,18 @@
 <li class="toctree-l1"><a class="reference internal" href="list_of_codes.html">List of core codes.</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Theoretical Background</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#entropy-in-information-theory">Entropy in information theory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#steps-for-data-compression-in-turbulent-fields">Steps for data compression in turbulent fields.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#lossy-data-truncation">Lossy data truncation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#lossless-data-encoding">Lossless data encoding</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#steps-for-data-compression-in-turbulent-fields">Steps for data compression in turbulent fields.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lossy-data-truncation">Lossy data truncation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#legendre-polynomials">Legendre Polynomials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#down-sampling">Down-sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lossless-data-encoding">Lossless data encoding</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="casename_par.html">&lt;casename&gt;.par</a></li>
 <li class="toctree-l1"><a class="reference internal" href="casename_usr.html">&lt;casename&gt;.usr</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compile_script.html">compile_script</a></li>
 <li class="toctree-l1"><a class="reference internal" href="makefile_usr_inc.html">makefile_usr.inc</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html">Legendre Polynomials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html#down-sampling">Down-sampling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="encoding.html">Lossless compression with BZIP2</a></li>
 </ul>
 
         </div>
@@ -121,8 +118,9 @@ lossless compression ineficient. It is for this reason that in order to
 achieve high compression ratios, one alternatie is to first include
 steps that reduce the entropy, generally converting the compression into
 a lossy process.</p>
+</div>
 <div class="section" id="lossy-data-truncation">
-<h3>Lossy data truncation<a class="headerlink" href="#lossy-data-truncation" title="Permalink to this headline">¶</a></h3>
+<h2>Lossy data truncation<a class="headerlink" href="#lossy-data-truncation" title="Permalink to this headline">¶</a></h2>
 <p>There are many ways to perform lossy compression, however,
 transfromation-based aproaches are among the most used. JPEG for image
 compression, for example, uses this aproach. Given that the data in
@@ -130,17 +128,205 @@ Nek5000 is distributed in a mesh with certain characteristics, the
 aproach taken in this library was to truncate the data in the legendre
 space while controlling the error. This is benefitial given that the
 user has total control in the fidelity of the data after it is stored.</p>
-<p>Details on the theory for this method can be found <a class="reference external" href="./truncation.rst">following this
-link</a></p>
+</div>
+<div class="section" id="legendre-polynomials">
+<h2>Legendre Polynomials<a class="headerlink" href="#legendre-polynomials" title="Permalink to this headline">¶</a></h2>
+<p>Spectral element solvers such as Nek5000, Neko and NekRS by discretize the domains with high
+order finite elements, each of them containing a number of
+Gauss-Lobatto-Legendre collocation points that allow them to perform
+numerical differentiation and integration thanks to numerical
+quadrature. A good characteristic of these points is that a set of
+polynomials known as the <strong>Legendre polynomials</strong> form
+an orthogonal basis <span class="math notranslate nohighlight">\(\phi\)</span> around them, therefore the value
+<span class="math notranslate nohighlight">\(u\)</span> of a known function at point <span class="math notranslate nohighlight">\(x\)</span> can be represented as a
+sum of the values of the orthogonal basis at different orders scaled by
+a set of Legendre coefficients <span class="math notranslate nohighlight">\(\hat{u}\)</span> as follow:</p>
+<div class="math notranslate nohighlight">
+\[u(x)=\sum_{i=0}^{N}\hat{u}_i\phi_i(x)\]</div>
+<p>The polynomials of order 0 and 1 are <span class="math notranslate nohighlight">\(\phi_0(x)=1\)</span> and
+<span class="math notranslate nohighlight">\(\phi_1(x)=x\)</span>, respectively, and the rest are obtained with the
+recursive formula:</p>
+<div class="math notranslate nohighlight">
+\[(i+1)\phi_{i+1}(x)=(2i+1)\phi_{i}(x)-(i)\phi_{i-1}(x), \quad i=1,..N,\]</div>
+<p>For convenience we also define now the integration weight matrix
+produced by the GLL quadrature:</p>
+<div class="math notranslate nohighlight">
+\[W_{ij}=\frac{2}{N(N+1)}\frac{1}{\phi^2_N(x_i)}\delta{ij}.\]</div>
+<p>Although this equation works for the value in a single
+point, in numerical methods we are often interested in a set of them.
+Therefore, if we define <span class="math notranslate nohighlight">\(\textbf{u}=[u_0, u_1, ... u_{N-1}]\)</span>, it
+is possible to transform the entire array by using a transformation
+matrix as follows:</p>
+<div class="math notranslate nohighlight">
+\[\textbf{u}=T\hat{\textbf{u}},\]</div>
+<p>where <span class="math notranslate nohighlight">\(T_{ij}^T=f_j\phi_{i}(x_j)\)</span> and <span class="math notranslate nohighlight">\(f_j\)</span> are scaling
+factors that make <span class="math notranslate nohighlight">\(T\)</span> orthogonal with respect to the integration
+weights such that <span class="math notranslate nohighlight">\(T^TWT=I\)</span> and are defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f_j=
+ \begin{cases}
+      \sqrt{(2(j+1)-1)/2} &amp; 0\leq j\leq N-1 \\
+      \sqrt{(N-1)/2} &amp; j=N
+ \end{cases}\end{split}\]</div>
+<p>Based on the previous explanation, it is straight forward to realize
+that a physical signal <span class="math notranslate nohighlight">\(u\)</span> has an equivalent representation in the
+Legendre space <span class="math notranslate nohighlight">\(\hat{u}=T^{-1}u\)</span>, the main difference however, is
+that not all entries in <span class="math notranslate nohighlight">\(\hat{u}\)</span> have the same relevance in the
+physical representation of the signal. Therefore, discarding or
+approximating some of the Legendre coefficients will provide fairly
+accurate physical reconstruction of the signal as long as some key
+elements are maintained. It is precisely this characteristic that makes
+this sort of approach a relevant case study for compression algorithms
+which is what we will focus in the following sections. We will initially
+focus in the effect that discarding information has in the reconstructed
+signal, and then analyze what needs to be stored in order for the
+algorithms to effectively compress.</p>
+</div>
+<div class="section" id="down-sampling">
+<h2>Down-sampling<a class="headerlink" href="#down-sampling" title="Permalink to this headline">¶</a></h2>
+<p>In signal processing, often times the high frequencies can not be
+perceived by humans or are not relevant for the signal representation in
+physical space. Turbulence is not an exception to this characteristic,
+as it is a process with high dissipation primarily at the smallest
+eddies, i.e, the higher frequencies. For this reason a natural choice of
+information to discard is is precisely that contained in higher
+frequencies.</p>
+<p>As mentioned before, in Legendre space, the information about the signal
+is contained mainly in the coefficients <span class="math notranslate nohighlight">\(\hat{u}\)</span>. The process of
+down-sampling consist of filtering a number of the coefficients that
+represent the importance of the high order Legendre polynomials (the
+higher frequencies) and transforming back such that an operation as the
+following is performed:</p>
+<div class="math notranslate nohighlight">
+\[\tilde{u}=T^{-1}FTu,\]</div>
+<p>Where <span class="math notranslate nohighlight">\(F\)</span> is a filtering operator that consist of a “broken
+identity matrix”. Eq. <a class="reference external" href="#eq:ds-1">[eq:ds-1]</a> summarize 3 main steps:</p>
+<ol class="arabic simple">
+<li>Transform the signal into the Legendre space: <span class="math notranslate nohighlight">\(\hat{u}=Tu\)</span>.</li>
+<li>Filter the signal: <span class="math notranslate nohighlight">\(\tilde{\hat{u}}=F\hat{u}\)</span>.</li>
+<li>Transform the down-sampled coefficients back to physical space:
+<span class="math notranslate nohighlight">\(\tilde{u}=T^{-1}\tilde{\hat{u}}\)</span>.</li>
+</ol>
+<p>It is important to note 2 main points: first that
+<span class="math notranslate nohighlight">\(\tilde{u} \neq u\)</span> unless <span class="math notranslate nohighlight">\(F=I\)</span>, so down-sampling
+undoubtedly brings with it some errors and second that the down-sampled
+coefficients contain less information than the original ones since only
+<span class="math notranslate nohighlight">\(k\)</span> coefficients are kept, while the rest are set to 0 trhough the
+filtering matrix <span class="math notranslate nohighlight">\(F\)</span>. The content of <span class="math notranslate nohighlight">\(\tilde{\hat{u}}\)</span> will
+be an array with entries arrayed in a similar fashion as shown now:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\tilde{\hat{u}}=
+\begin{bmatrix}
+\hat{u}_0 \\
+\hat{u}_1 \\
+...\\
+\hat{u}_{k-1} \\
+\hat{u}_k \\
+0 \\
+.. \\
+0 \\
+\end{bmatrix}.\end{split}\]</div>
+<p>It is possible to see that since <span class="math notranslate nohighlight">\(\tilde{\hat{u}}\)</span> has many zeros
+in it, it is much easier to represent it in memory than the
+reconstructed signal <span class="math notranslate nohighlight">\(\tilde{u}\)</span> and through lossless compression
+algorithms that include run-length encoding or Huffman encoding, the
+array in disk will only occupy the size that is needed for the <span class="math notranslate nohighlight">\(k\)</span>
+entries kept while the extra zeros will represent only a minor storage
+overhead.</p>
+</div>
+<div class="section" id="discreet-legendre-truncation">
+<h2>Discreet Legendre truncation<a class="headerlink" href="#discreet-legendre-truncation" title="Permalink to this headline">¶</a></h2>
+<p>[&#64;Otero2018] recognized the use of down-sampling but extended it for
+turbulence in spectral element methods. They realized that although
+higher frequencies should have the lower energies (lower magnitude
+coefficients), numerically in the Legendre space, this is not the case,
+particularly when considering 3D simulations with the data structures
+used in spectral element solvers.</p>
+<p>Therefore they introduced extra steps to the algorithm that ensure that
+it is not the higher frequencies that are filtered out, instead it is
+the frequencies that posses the lower energies. The principles are still
+the same as in down-sampling but instead immediately filtering out the
+coefficients, first a sorting operation is performed. The algorithm is
+as follow:</p>
+<ol class="arabic simple">
+<li>Transform the signal into the Legendre space: <span class="math notranslate nohighlight">\(\hat{u}=Tu\)</span>.</li>
+<li>Sort the coefficients <span class="math notranslate nohighlight">\(\hat{u}^{s}=sort(\hat{u})\)</span></li>
+<li>Filter the sorted signal: <span class="math notranslate nohighlight">\(\tilde{\hat{u}}^{s}=F\hat{u}^{s}\)</span>.</li>
+<li>Unsort the signal:
+<span class="math notranslate nohighlight">\(\tilde{\hat{u}}=unsort(\tilde{\hat{u}}^{s})\)</span>.</li>
+<li>Transform the truncated coefficients back to physical space:
+<span class="math notranslate nohighlight">\(\tilde{u}=T^{-1}\tilde{\hat{u}}\)</span>.</li>
+</ol>
+<p>For this case, the array <span class="math notranslate nohighlight">\(\tilde{\hat{u}}\)</span> will not possess all
+the zeros grouped at the end as would be the case in down-sampling,
+however with the correct encoding technique, the storage overhead is
+negligible. This method has the advantage that if the same number
+<span class="math notranslate nohighlight">\(k\)</span> of frequencies are kept, lower errors will be obtained due to
+the fact that in this method the most influential frequencies are
+stored.</p>
+<p>Additionally to this procedure, [&#64;Otero2018] also introduced a way to
+calculate the reconstruction error at run-time without the need to
+transforms back to physical space by taking advantage of 1. how the L2
+norm of a physical variable is calculated and 2. the Legendre quadrature
+for integration, as follows:</p>
+<div class="math notranslate nohighlight">
+\[\lVert  u\rVert_{2}=\sqrt{\int_{\Omega}u^2 d\Omega}=\sqrt{u^TWu}=\sqrt{(T\hat{u})^TW(T\hat{u})}=\sqrt{\hat{u}^TW\hat{u}}.\]</div>
+<p>This provided an efficient way to control error an compress only up to a
+user predefined threshold <span class="math notranslate nohighlight">\(\epsilon\)</span> of the error.</p>
+<p>The DLT method was initially proposed in a theoretical manner but has
+been since extended by to include run-time encoding and produce a fully
+functioning lossy compression algorithm that in fact matches well with
+the theoretical expectations one would have of such a lossy compression.</p>
+<p>We have further extended the code to also control the Peak Signal To
+Noise ratio:</p>
+<div class="math notranslate nohighlight">
+\[PSNR=20 \log{\frac{max(u)-min(u)}{\lVert  u\rVert_{2}}}\]</div>
+<p>Controling this error as well, allows the procedure to control in a more
+localized manner where more compression is allowed, in such a way that
+in regions with high fluctuations, where the spectrum is flatter, less
+error is allowed to mantain fidelity over compression.</p>
 </div>
 <div class="section" id="lossless-data-encoding">
-<h3>Lossless data encoding<a class="headerlink" href="#lossless-data-encoding" title="Permalink to this headline">¶</a></h3>
+<h2>Lossless data encoding<a class="headerlink" href="#lossless-data-encoding" title="Permalink to this headline">¶</a></h2>
 <p>After the entropy of the data set has been reduced by a lossy truncation
 step. It can be losslessly compressed without introducing new errors by
 a multitude of schemes that serve this purpose. In this project we have
-chosen to use bzip2 trough ADIOS2. More details can be found <a class="reference external" href="./encoding.rst">following
-this link</a></p>
-</div>
+chosen to use bzip2 trough ADIOS2.</p>
+<p>For the lossless compression step, we use the library ADIOS2
+[&#64;godoy2020adios] in order to have a data management framework that
+would allow us to transfer data in an efficient way, apart from
+seamlessly integrating many lossless compression algorithms, including
+<strong>bzip2</strong>, which we decided to use. In principle, any other form of
+lossless compression would serve the same purpose.</p>
+<p>The input for this step is a velocity or pressure array that has been
+truncated, i.e., many of its entries has been set to be zero. Then the
+bzip algorithm applies several layers of compression techniques in the
+following order:</p>
+<ul class="simple">
+<li><strong>Run-length encoding.</strong> Where portions of data are represented as a
+single data value and a count instead of the original, for example
+representing a string of “5555222” as “4532”. This is particularly
+useful for the truncated velocity fields as many entries has been set
+to zero.</li>
+<li><strong>Burrows–Wheeler transform</strong>. Which is a reversible transformation
+that rearranges the entries of a character string into runs of
+repeated characters. For example, a string <code class="docutils literal notranslate"><span class="pre">&quot;*BANANA|&quot;</span></code> will be
+rearranged as “BNN*AA|A”, where more identical characters can be seen
+next to each other.</li>
+<li><strong>Move-to-front transform</strong>. The main idea of the algorithm is that
+each symbol is replaced by its index in a list of most used symbols,
+if a symbol appears in sequence it would be replaced by zeros while
+if it does not appear frequently is replaced by a large number.
+Applying the algorithm to the string “bananaaa” having as a list of
+symbols the letters in the alphabet, will produce the following
+sequence: “1,1,13,1,1,1,0,0” .</li>
+<li><strong>Run-length encoding.</strong> once again.</li>
+<li><strong>Huffman coding.</strong> The algorithm produces a code table for encoding
+the source symbol. The table is obtained by calculating the
+probability (or frequency of occurrence) for each value in the source
+to occur. Symbols with high probability will be represented with
+codes that use less bits that those used for less common symbols.</li>
+</ul>
 </div>
 </div>
 

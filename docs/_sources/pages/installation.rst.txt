@@ -53,23 +53,22 @@ wish to use their own version of Nek5000, some files in the source need
 to be modified for the linking to occur. Such files can be readily
 checked and copied from the Nek5000 version shipped in this repository.
 
-The following files were modified in the
-`core <https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core>`__:
-\*
-```drive.f`` <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/drive.f>`__
-\*
-```makenek.inc`` <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makenek.inc>`__
-\*
-```makefile.template`` <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makefile.template>`__
+The following files were modified in the `core <https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core>`_:
 
-The following files were added to the
-`3rd_party <https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core/3rd_party>`__
-folder and contain the ADIOS2 subroutines. \*
-```nek_in_situ.f`` <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_in_situ.f>`__
-\*
-```adios2.f`` <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/adios2.f>`__
-\*
-```nek_adios2.cpp`` <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_adios2.cpp>`__
+* `drive.f <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/drive.f>`__
+
+* `makenek.inc <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makenek.inc>`__
+
+* `makefile.template <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/makefile.template>`__
+
+The following files were added to the `3rd_party <https://github.com/KTH-Nek5000/NekDCTB/tree/main/Nek5000/core/3rd_party>`__
+folder and contain the ADIOS2 subroutines. 
+
+* `nek_in_situ.f <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_in_situ.f>`__
+
+* `adios2.f <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/adios2.f>`__
+
+* `nek_adios2.cpp <https://github.com/KTH-Nek5000/NekDCTB/blob/main/Nek5000/core/3rd_party/nek_adios2.cpp>`__
 
 Compiling Nek5000 with ADIOS2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,9 +80,11 @@ Compiling Nek5000 with ADIOS2
    --->
 
 Just as for any other used-defined function in Nek5000, 3 main files
-must be modified to be able to use the toolbox: 1. :ref:`compile_script`
- 2.
-:ref:`makefile_usr_inc` 3. :ref:`casename_usr`
+must be modified to be able to use the toolbox:
+
+1. :ref:`compile_script`
+2. :ref:`makefile_usr_inc` 
+3. :ref:`casename_usr`
 
 Templates of the modified files can be found at the
 `DCTB <https://github.com/KTH-Nek5000/NekDCTB/tree/main/DCTB>`__ and

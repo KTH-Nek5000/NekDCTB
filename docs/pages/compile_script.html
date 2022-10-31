@@ -48,10 +48,6 @@
 <li class="toctree-l1"><a class="reference internal" href="casename_usr.html">&lt;casename&gt;.usr</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">compile_script</a></li>
 <li class="toctree-l1"><a class="reference internal" href="makefile_usr_inc.html">makefile_usr.inc</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html">Legendre Polynomials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html#down-sampling">Down-sampling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="truncation.html#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="encoding.html">Lossless compression with BZIP2</a></li>
 </ul>
 
         </div>
@@ -79,17 +75,29 @@
            <div itemprop="articleBody">
              
   <div class="section" id="compile-script">
-<h1>compile_script<a class="headerlink" href="#compile-script" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>compile_script<a class="headerlink" href="#compile-script" title="Permalink to this headline">¶</a></h1>
 <p>We recomend to use a compile script as the one shown in the
 <a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/examples/turbPipe/compile/compile_script">examples</a>
 folder. The structure is the same as would be needed to compile Nek5000
-but has the following aditions: 1. The path to the data compression tool
-box must be specified.
-<code class="docutils literal notranslate"><span class="pre">sh</span>&#160;&#160; <span class="pre">export</span> <span class="pre">COMPRESS_SRC=&quot;$PWD/../../../DCTB&quot;</span>&#160;&#160; <span class="pre">export</span> <span class="pre">COMPRESS_INC=&quot;</span> <span class="pre">-I&quot;${COMPRESS_SRC}</span>&#160;&#160; <span class="pre">COMPRESS_INC+=&quot;</span> <span class="pre">-I&quot;${COMPRESS_SRC}&quot;/framework_files&quot;</span></code>
-2. The folders with the subroutines must be added to the shearch space
-of the fortran compiler. <code class="docutils literal notranslate"><span class="pre">sh</span>&#160;&#160; <span class="pre">export</span> <span class="pre">FC=&quot;mpifort&quot;${COMPRESS_INC}</span></code> 3.
-ADIOS2 instrumentation must be activated. This is done by including the
-following flag in the preprocesor list. <code class="docutils literal notranslate"><span class="pre">sh</span>&#160;&#160; <span class="pre">export</span> <span class="pre">PPLIST=&quot;ADIOS2&quot;</span></code></p>
+but has the following aditions:</p>
+<ol class="arabic simple">
+<li>The path to the data compression tool box must be specified.</li>
+</ol>
+<div class="code sh highlight-default notranslate"><div class="highlight"><pre><span></span>export COMPRESS_SRC=&quot;$PWD/../../../DCTB&quot;
+export COMPRESS_INC=&quot; -I&quot;${COMPRESS_SRC}
+COMPRESS_INC+=&quot; -I&quot;${COMPRESS_SRC}&quot;/framework_files&quot;
+</pre></div>
+</div>
+<p>2. The folders with the subroutines must be added to the shearch space
+of the fortran compiler.</p>
+<div class="code sh highlight-default notranslate"><div class="highlight"><pre><span></span>export FC=&quot;mpifort&quot;${COMPRESS_INC}
+</pre></div>
+</div>
+<p>3. ADIOS2 instrumentation must be activated. This is done by including the
+following flag in the preprocesor list.</p>
+<div class="code sh highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">PPLIST</span><span class="o">=</span><span class="s2">&quot;ADIOS2&quot;</span>
+</pre></div>
+</div>
 <ol class="arabic simple" start="4">
 <li>The following user defined functions must included in the compilation
 of Nek5000. Users of the
@@ -101,7 +109,7 @@ compression toolbox itself is contained in <code class="docutils literal notrans
 <span class="n">USR</span><span class="o">+=</span><span class="s2">&quot; io_trunc.o sperri_trunc.o&quot;</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="4">
+<ol class="arabic simple" start="5">
 <li>Finally, some files from the toolbox folder must be copied into the
 compile script. These are files that will later be used by ADIOS2 for
 runtime configuration of the lossless compression.</li>
