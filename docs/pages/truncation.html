@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legendre Polynomials &mdash; NekDCTB 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lossless compression with BZIP2" href="encoding.html" />
+    <link rel="prev" title="makefile_usr.inc" href="makefile_usr_inc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> NekDCTB
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="list_of_codes.html">List of core codes.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Theoretical Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="casename_par.html">&lt;casename&gt;.par</a></li>
+<li class="toctree-l1"><a class="reference internal" href="casename_usr.html">&lt;casename&gt;.usr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compile_script.html">compile_script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="makefile_usr_inc.html">makefile_usr.inc</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Legendre Polynomials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#down-sampling">Down-sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encoding.html">Lossless compression with BZIP2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NekDCTB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Legendre Polynomials</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/truncation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="legendre-polynomials">
+<h1>Legendre Polynomials<a class="headerlink" href="#legendre-polynomials" title="Permalink to this headline">¶</a></h1>
+<p>Spectral element solvers such as Nek5000, Neko by
+ and NekRS by
+ discretize the domains with high
+order finite elements, each of them containing a number of
+Gauss-Lobatto-Legendre collocation points that allow them to perform
+numerical differentiation and integration thanks to numerical
+quadrature. A good characteristic of these points is that a set of
+polynomials known as the  form
+an orthogonal basis <span class="math notranslate nohighlight">\(\phi\)</span> around them, therefore the value
+<span class="math notranslate nohighlight">\(u\)</span> of a known function at point <span class="math notranslate nohighlight">\(x\)</span> can be represented as a
+sum of the values of the orthogonal basis at different orders scaled by
+a set of Legendre coefficients <span class="math notranslate nohighlight">\(\hat{u}\)</span> as follow:</p>
+<div class="math notranslate nohighlight">
+\[u(x)=\sum_{i=0}^{N}\hat{u}_i\phi_i(x)\]</div>
+<p>The polynomials of order 0 and 1 are <span class="math notranslate nohighlight">\(\phi_0(x)=1\)</span> and
+<span class="math notranslate nohighlight">\(\phi_1(x)=x\)</span>, respectively, and the rest are obtained with the
+recursive formula:</p>
+<div class="math notranslate nohighlight">
+\[(i+1)\phi_{i+1}(x)=(2i+1)\phi_{i}(x)-(i)\phi_{i-1}(x), \quad i=1,..N,\]</div>
+<p>For convenience we also define now the integration weight matrix
+produced by the GLL quadrature:</p>
+<div class="math notranslate nohighlight">
+\[W_{ij}=\frac{2}{N(N+1)}\frac{1}{\phi^2_N(x_i)}\delta{ij}.\]</div>
+<p>Although eq.  works for the value in a single
+point, in numerical methods we are often interested in a set of them.
+Therefore, if we define <span class="math notranslate nohighlight">\(\textbf{u}=[u_0, u_1, ... u_{N-1}]\)</span>, it
+is possible to transform the entire array by using a transformation
+matrix as follows:</p>
+<div class="math notranslate nohighlight">
+\[\textbf{u}=T\hat{\textbf{u}},\]</div>
+<p>where <span class="math notranslate nohighlight">\(T_{ij}^T=f_j\phi_{i}(x_j)\)</span> and <span class="math notranslate nohighlight">\(f_j\)</span> are scaling
+factors that make <span class="math notranslate nohighlight">\(T\)</span> orthogonal with respect to the integration
+weights such that <span class="math notranslate nohighlight">\(T^TWT=I\)</span> and are defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f_j=
+ \begin{cases}
+      \sqrt{(2(j+1)-1)/2} &amp; 0\leq j\leq N-1 \\
+      \sqrt{(N-1)/2} &amp; j=N
+ \end{cases}\end{split}\]</div>
+<p>Based on the previous explanation, it is straight forward to realize
+that a physical signal <span class="math notranslate nohighlight">\(u\)</span> has an equivalent representation in the
+Legendre space <span class="math notranslate nohighlight">\(\hat{u}=T^{-1}u\)</span>, the main difference however, is
+that not all entries in <span class="math notranslate nohighlight">\(\hat{u}\)</span> have the same relevance in the
+physical representation of the signal. Therefore, discarding or
+approximating some of the Legendre coefficients will provide fairly
+accurate physical reconstruction of the signal as long as some key
+elements are maintained. It is precisely this characteristic that makes
+this sort of approach a relevant case study for compression algorithms
+which is what we will focus in the following sections. We will initially
+focus in the effect that discarding information has in the reconstructed
+signal, and then analyze what needs to be stored in order for the
+algorithms to effectively compress.</p>
+</div>
+<div class="section" id="down-sampling">
+<h1>Down-sampling<a class="headerlink" href="#down-sampling" title="Permalink to this headline">¶</a></h1>
+<p>In signal processing, often times the high frequencies can not be
+perceived by humans or are not relevant for the signal representation in
+physical space. Turbulence is not an exception to this characteristic,
+as it is a process with high dissipation primarily at the smallest
+eddies, i.e, the higher frequencies. For this reason a natural choice of
+information to discard is is precisely that contained in higher
+frequencies.</p>
+<p>As mentioned before, in Legendre space, the information about the signal
+is contained mainly in the coefficients <span class="math notranslate nohighlight">\(\hat{u}\)</span>. The process of
+down-sampling consist of filtering a number of the coefficients that
+represent the importance of the high order Legendre polynomials (the
+higher frequencies) and transforming back such that an operation as the
+following is performed:</p>
+<div class="math notranslate nohighlight">
+\[\tilde{u}=T^{-1}FTu,\]</div>
+<p>Where <span class="math notranslate nohighlight">\(F\)</span> is a filtering operator that consist of a “broken
+identity matrix”. Eq. <a class="reference external" href="#eq:ds-1">[eq:ds-1]</a> summarize 3 main steps:</p>
+<ol class="arabic simple">
+<li>Transform the signal into the Legendre space: <span class="math notranslate nohighlight">\(\hat{u}=Tu\)</span>.</li>
+<li>Filter the signal: <span class="math notranslate nohighlight">\(\tilde{\hat{u}}=F\hat{u}\)</span>.</li>
+<li>Transform the down-sampled coefficients back to physical space:
+<span class="math notranslate nohighlight">\(\tilde{u}=T^{-1}\tilde{\hat{u}}\)</span>.</li>
+</ol>
+<p>It is important to note 2 main points: first that
+<span class="math notranslate nohighlight">\(\tilde{u} \neq u\)</span> unless <span class="math notranslate nohighlight">\(F=I\)</span>, so down-sampling
+undoubtedly brings with it some errors and second that the down-sampled
+coefficients contain less information than the original ones since only
+<span class="math notranslate nohighlight">\(k\)</span> coefficients are kept, while the rest are set to 0 trhough the
+filtering matrix <span class="math notranslate nohighlight">\(F\)</span>. The content of <span class="math notranslate nohighlight">\(\tilde{\hat{u}}\)</span> will
+be an array with entries arrayed in a similar fashion as shown now:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\tilde{\hat{u}}=
+\begin{bmatrix}
+\hat{u}_0 \\
+\hat{u}_1 \\
+...\\
+\hat{u}_{k-1} \\
+\hat{u}_k \\
+0 \\
+.. \\
+0 \\
+\end{bmatrix}.\end{split}\]</div>
+<p>It is possible to see that since <span class="math notranslate nohighlight">\(\tilde{\hat{u}}\)</span> has many zeros
+in it, it is much easier to represent it in memory than the
+reconstructed signal <span class="math notranslate nohighlight">\(\tilde{u}\)</span> and through lossless compression
+algorithms that include run-length encoding or Huffman encoding, the
+array in disk will only occupy the size that is needed for the <span class="math notranslate nohighlight">\(k\)</span>
+entries kept while the extra zeros will represent only a minor storage
+overhead.</p>
+</div>
+<div class="section" id="discreet-legendre-truncation">
+<h1>Discreet Legendre truncation<a class="headerlink" href="#discreet-legendre-truncation" title="Permalink to this headline">¶</a></h1>
+<p>[&#64;Otero2018] recognized the use of down-sampling but extended it for
+turbulence in spectral element methods. They realized that although
+higher frequencies should have the lower energies (lower magnitude
+coefficients), numerically in the Legendre space, this is not the case,
+particularly when considering 3D simulations with the data structures
+used in spectral element solvers.</p>
+<p>Therefore they introduced extra steps to the algorithm that ensure that
+it is not the higher frequencies that are filtered out, instead it is
+the frequencies that posses the lower energies. The principles are still
+the same as in down-sampling but instead immediately filtering out the
+coefficients, first a sorting operation is performed. The algorithm is
+as follow:</p>
+<ol class="arabic simple">
+<li>Transform the signal into the Legendre space: <span class="math notranslate nohighlight">\(\hat{u}=Tu\)</span>.</li>
+<li>Sort the coefficients <span class="math notranslate nohighlight">\(\hat{u}^{s}=sort(\hat{u})\)</span></li>
+<li>Filter the sorted signal: <span class="math notranslate nohighlight">\(\tilde{\hat{u}}^{s}=F\hat{u}^{s}\)</span>.</li>
+<li>Unsort the signal:
+<span class="math notranslate nohighlight">\(\tilde{\hat{u}}=unsort(\tilde{\hat{u}}^{s})\)</span>.</li>
+<li>Transform the truncated coefficients back to physical space:
+<span class="math notranslate nohighlight">\(\tilde{u}=T^{-1}\tilde{\hat{u}}\)</span>.</li>
+</ol>
+<p>For this case, the array <span class="math notranslate nohighlight">\(\tilde{\hat{u}}\)</span> will not possess all
+the zeros grouped at the end as would be the case in down-sampling,
+however with the correct encoding technique, the storage overhead is
+negligible. This method has the advantage that if the same number
+<span class="math notranslate nohighlight">\(k\)</span> of frequencies are kept, lower errors will be obtained due to
+the fact that in this method the most influential frequencies are
+stored.</p>
+<p>Additionally to this procedure, [&#64;Otero2018] also introduced a way to
+calculate the reconstruction error at run-time without the need to
+transforms back to physical space by taking advantage of 1. how the L2
+norm of a physical variable is calculated and 2. the Legendre quadrature
+for integration, as follows:</p>
+<div class="math notranslate nohighlight">
+\[\lVert  u\rVert_{2}=\sqrt{\int_{\Omega}u^2 d\Omega}=\sqrt{u^TWu}=\sqrt{(T\hat{u})^TW(T\hat{u})}=\sqrt{\hat{u}^TW\hat{u}}.\]</div>
+<p>This provided an efficient way to control error an compress only up to a
+user predefined threshold <span class="math notranslate nohighlight">\(\epsilon\)</span> of the error.</p>
+<p>The DLT method was initially proposed in a theoretical manner but has
+been since extended by to include run-time encoding and produce a fully
+functioning lossy compression algorithm that in fact matches well with
+the theoretical expectations one would have of such a lossy compression.</p>
+<p>We have further extended the code to also control the Peak Signal To
+Noise ratio:</p>
+<div class="math notranslate nohighlight">
+\[PSNR=20 \log{\frac{max(u)-min(u)}{\lVert  u\rVert_{2}}}\]</div>
+<p>Controling this error as well, allows the procedure to control in a more
+localized manner where more compression is allowed, in such a way that
+in regions with high fluctuations, where the spectrum is flatter, less
+error is allowed to mantain fidelity over compression.</p>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="makefile_usr_inc.html" class="btn btn-neutral float-left" title="makefile_usr.inc" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="encoding.html" class="btn btn-neutral float-right" title="Lossless compression with BZIP2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, KTH.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

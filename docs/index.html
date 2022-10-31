@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NekDCTB &mdash; NekDCTB 0.1 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation and Dependencies" href="pages/installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> NekDCTB
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pages/installation.html">Installation and Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/list_of_codes.html">List of core codes.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/background.html">Theoretical Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/casename_par.html">&lt;casename&gt;.par</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/casename_usr.html">&lt;casename&gt;.usr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/compile_script.html">compile_script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/makefile_usr_inc.html">makefile_usr.inc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/truncation.html">Legendre Polynomials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/truncation.html#down-sampling">Down-sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/truncation.html#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/encoding.html">Lossless compression with BZIP2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">NekDCTB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>NekDCTB</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="nekdctb">
+<h1>NekDCTB<a class="headerlink" href="#nekdctb" title="Permalink to this headline">¶</a></h1>
+<p>NekDCTB is a data compression toolbox for in-situ and static data
+compression of files generated with the CFD solver
+<a class="reference external" href="https://nek5000.mcs.anl.gov/">Nek5000</a>. The method used, however, is
+functional for any other spectral element solver. NekDCTB supports lossy
+and lossless compression, and uses the library
+<a class="reference external" href="https://github.com/ornladios">ADIOS2</a> for the pusrpose of encoding
+the data and for data transint during asyncrhonous operation. The target
+of the toolbox are 3D CFD flow fields with billions of gridpoints that
+are not only a major computational challenge but also a concern for
+storage. The project has been built on top of other tools developed at
+KTH - Royal Institute of Technology in Sweden, specifically the <a class="reference external" href="https://github.com/KTH-Nek5000/KTH_Framework">Nek5000
+KTH Framework</a>, however
+core functions have been shipped with this distribution in order to
+provide a stand-alone toolbox.</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pages/installation.html">Installation and Dependencies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/installation.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/installation.html#installation-and-usage">Installation and Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/installation.html#linking-nek5000-with-adios2">Linking Nek5000 with ADIOS2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/installation.html#compiling-nek5000-with-adios2">Compiling Nek5000 with ADIOS2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/installation.html#running-nek5000-with-adios2">Running Nek5000 with ADIOS2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/list_of_codes.html">List of core codes.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/background.html">Theoretical Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/background.html#entropy-in-information-theory">Entropy in information theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/background.html#steps-for-data-compression-in-turbulent-fields">Steps for data compression in turbulent fields.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/background.html#lossy-data-truncation">Lossy data truncation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/background.html#lossless-data-encoding">Lossless data encoding</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/casename_par.html">&lt;casename&gt;.par</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/casename_usr.html">&lt;casename&gt;.usr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/compile_script.html">compile_script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/makefile_usr_inc.html">makefile_usr.inc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/truncation.html">Legendre Polynomials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/truncation.html#down-sampling">Down-sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/truncation.html#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/encoding.html">Lossless compression with BZIP2</a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pages/installation.html" class="btn btn-neutral float-right" title="Installation and Dependencies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, KTH.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>compile_script &mdash; NekDCTB 0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="makefile_usr.inc" href="makefile_usr_inc.html" />
+    <link rel="prev" title="&lt;casename&gt;.usr" href="casename_usr.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> NekDCTB
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="list_of_codes.html">List of core codes.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Theoretical Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="casename_par.html">&lt;casename&gt;.par</a></li>
+<li class="toctree-l1"><a class="reference internal" href="casename_usr.html">&lt;casename&gt;.usr</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">compile_script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="makefile_usr_inc.html">makefile_usr.inc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="truncation.html">Legendre Polynomials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="truncation.html#down-sampling">Down-sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="truncation.html#discreet-legendre-truncation">Discreet Legendre truncation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="encoding.html">Lossless compression with BZIP2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NekDCTB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>compile_script</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/compile_script.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="compile-script">
+<h1>compile_script<a class="headerlink" href="#compile-script" title="Permalink to this headline">¶</a></h1>
+<p>We recomend to use a compile script as the one shown in the
+<a class="reference external" href="https://github.com/KTH-Nek5000/NekDCTB/blob/main/examples/turbPipe/compile/compile_script">examples</a>
+folder. The structure is the same as would be needed to compile Nek5000
+but has the following aditions: 1. The path to the data compression tool
+box must be specified.
+<code class="docutils literal notranslate"><span class="pre">sh</span>&#160;&#160; <span class="pre">export</span> <span class="pre">COMPRESS_SRC=&quot;$PWD/../../../DCTB&quot;</span>&#160;&#160; <span class="pre">export</span> <span class="pre">COMPRESS_INC=&quot;</span> <span class="pre">-I&quot;${COMPRESS_SRC}</span>&#160;&#160; <span class="pre">COMPRESS_INC+=&quot;</span> <span class="pre">-I&quot;${COMPRESS_SRC}&quot;/framework_files&quot;</span></code>
+2. The folders with the subroutines must be added to the shearch space
+of the fortran compiler. <code class="docutils literal notranslate"><span class="pre">sh</span>&#160;&#160; <span class="pre">export</span> <span class="pre">FC=&quot;mpifort&quot;${COMPRESS_INC}</span></code> 3.
+ADIOS2 instrumentation must be activated. This is done by including the
+following flag in the preprocesor list. <code class="docutils literal notranslate"><span class="pre">sh</span>&#160;&#160; <span class="pre">export</span> <span class="pre">PPLIST=&quot;ADIOS2&quot;</span></code></p>
+<ol class="arabic simple" start="4">
+<li>The following user defined functions must included in the compilation
+of Nek5000. Users of the
+<a class="reference external" href="https://github.com/KTH-Nek5000/KTH_Framework">KTH-Framework</a> will
+notice that the first row correspond to supporting files. The data
+compression toolbox itself is contained in <code class="docutils literal notranslate"><span class="pre">io_trunc.o</span></code></li>
+</ol>
+<div class="code sh highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">USR</span><span class="o">=</span><span class="s2">&quot;frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o&quot;</span>
+<span class="n">USR</span><span class="o">+=</span><span class="s2">&quot; io_trunc.o sperri_trunc.o&quot;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li>Finally, some files from the toolbox folder must be copied into the
+compile script. These are files that will later be used by ADIOS2 for
+runtime configuration of the lossless compression.</li>
+</ol>
+<div class="code sh highlight-default notranslate"><div class="highlight"><pre><span></span>cp -r ${COMPRESS_SRC}/config .
+cp -r config/synch_config.xml config/config.xml
+cp ${NEK_SOURCE_ROOT}/core/3rd_party/opt/single_synch_nek_adios2.cpp ${NEK_SOURCE_ROOT}/core/3rd_party/nek_adios2.cpp
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="casename_usr.html" class="btn btn-neutral float-left" title="&lt;casename&gt;.usr" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="makefile_usr_inc.html" class="btn btn-neutral float-right" title="makefile_usr.inc" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, KTH.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
