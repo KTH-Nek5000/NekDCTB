@@ -1,0 +1,67 @@
+#!/bin/bash
+
+function error_quit {
+    echo -e "$@"
+    echo
+    echo -e 'Usage:'
+    echo -e './compile_script --clean'
+    echo -e '   To clean build direcrtory. Makenek will ask for cleaning 3rd-party libraries.'
+    echo
+    echo -e './compile_script --all'
+    echo -e '   To compile the code.'
+    exit 1
+}
+
+# Add paths to the compression tool
+export COMPRESS_SRC="$PWD/../../../DCTB"
+export COMPRESS_INC=" -I"${COMPRESS_SRC}
+COMPRESS_INC+=" -I"${COMPRESS_SRC}"/framework_files"
+
+# Nek5000 parameters at the end of Ftn compiler, add where to find the tools
+export CASE="turbPipe"
+export NEK_SOURCE_ROOT="$PWD/../../../Nek5000"
+export FC="mpifort"${COMPRESS_INC}
+export CC="mpicc"
+export CXX="mpicxx"
+export FFLAGS="-mcmodel=large"
+export CFLAGS=""
+export PPLIST="ADIOS2"
+export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o"
+USR+=" test_io_trunc.o io_trunc.o sperri_trunc.o"
+export USR_LFLAGS=""
+
+
+# Copy the config folder for the in-situ writer
+cp -r ${COMPRESS_SRC}/config .
+cp -r config/synch_config.xml config/config.xml
+
+# In nek source, compile the asynchronous version
+cp ${NEK_SOURCE_ROOT}/core/3rd_party/opt/single_synch_nek_adios2.cpp ${NEK_SOURCE_ROOT}/core/3rd_party/nek_adios2.cpp
+
+# arguments
+args=("$@")
+argsnr=$#
+
+# check arguments
+# parameters number check
+if [ $[argsnr] -ne 1 ]; then
+    error_quit 'Wrong arguments number!'
+fi
+
+for il in "$@"
+do
+case $il in
+        --clean)
+		rm -r config
+		${NEK_SOURCE_ROOT}/bin/makenek clean
+                shift
+                ;;
+        --all)
+                ${NEK_SOURCE_ROOT}/bin/makenek ${CASE}
+                shift
+                ;;
+        *) 
+                error_quit 'Wrong argument.'
+                ;;
+esac
+done
