@@ -1,0 +1,67 @@
+#
+# nek parameter file
+#
+[GENERAL] 
+stopAt = numSteps #endTime
+#endTime = 30.0
+numSteps = 50 
+#numSteps = 1
+
+dt = -5.0e-4
+timeStepper = bdf3 #char #steady
+variableDt = no
+targetCFL = 0.3
+
+writeControl = timeStep #runTime
+#writeInterval = 10  
+writeInterval = 5  
+
+dealiasing = yes
+filtering = none
+
+[PROBLEMTYPE]
+stressFormulation = no
+variableProperties = no
+
+[PRESSURE]
+residualTol = 1e-8
+residualProj = no
+
+[VELOCITY]
+residualTol = 1e-8
+residualProj = no
+density = 1.0
+viscosity = -2650.
+advection = yes
+
+[TEMPERATURE]
+solver = none
+writeToFieldFile = yes
+
+#
+[_RUNPAR]               # Runtime parameter section for rprm module
+PARFWRITE            = no                     # Do we write runtime parameter file
+PARFNAME             = outparfile             # Runtime parameter file name for output (without .par)
+#
+[_MONITOR]              # Runtime parameter section for monitor module
+LOGLEVEL             = 4                      # Logging threshold for toolboxes
+WALLTIME             = 71:45                  # Simulation wall time
+#
+[_CHKPOINT]             # Runtime paramere section for checkpoint module
+READCHKPT            = no                    # Restat from checkpoint
+CHKPFNUMBER          = 2                      # Restart file number
+CHKPINTERVAL         = 5000                   # Checkpiont saving frequency (number of time steps)
+#
+[_STAT]             # Runtime paramere section for statistics module
+AVSTEP               = 10
+IOSTEP               = 5000
+#
+[_IOTRUNC]
+FILETOCOMP           = "turbPipe0.f"
+SCOMP                = yes
+SDECOMP              = yes
+INSITUCOMP           = no
+NUMFILE              = 5
+TRUNCSTEP            = 5
+READSTEP             = 7
+TARGETERR            = 1e-2
