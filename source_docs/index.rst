@@ -24,6 +24,7 @@ provide a stand-alone toolbox.
    ./pages/list_of_codes
    ./pages/background
    ./pages/results
+   ./pages/bib
    
 .. toctree::
    :maxdepth: 3
