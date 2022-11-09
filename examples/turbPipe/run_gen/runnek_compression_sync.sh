@@ -7,5 +7,6 @@ cp ../compile_compression/nek5000 .
 cp -r ../compile_compression/config .
 echo turbPipe > SESSION.NAME
 echo `pwd`'/' >> SESSION.NAME
+cp data/* .
 mpirun -np 4 ./nek5000
 

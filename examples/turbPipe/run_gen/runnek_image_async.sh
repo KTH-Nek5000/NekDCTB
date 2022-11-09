@@ -8,5 +8,6 @@ cp ../compile_image/catalystSpace .
 cp -r ../compile_image/config .
 echo turbPipe > SESSION.NAME
 echo `pwd`'/' >> SESSION.NAME
+cp data/* .
 mpirun -np 4 ./nek5000 : -np 2 ./catalystSpace
 

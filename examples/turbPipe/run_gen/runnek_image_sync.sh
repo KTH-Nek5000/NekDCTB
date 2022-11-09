@@ -6,5 +6,6 @@ rm -r config
 cp ../compile_image/nek5000 .
 echo turbPipe > SESSION.NAME
 echo `pwd`'/' >> SESSION.NAME
+cp data/* .
 mpirun -np 4 ./nek5000
 
