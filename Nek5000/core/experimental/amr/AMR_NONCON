@@ -1,0 +1,39 @@
+!> @file AMR_NONCON
+!! @brief include file with parameter and common block definitions for 
+!! nonconforming face interpolation
+!! @author Adam Peplinski
+!! @date Feb 26, 2016
+!=======================================================================
+      real  amr_qmlt(lx1*ly1*lz1*lelt),
+     $   amr_jtmlt(lx1*ly1*lz1*lelt), amr_jimlt(lx1*ly1*lz1*lelt),
+     $   amr_jm_fc(lx1,lx1,2,maxmor), amr_jm_fci(lx1,lx1,2,maxmor),
+     $   amr_jm_ed(lx1,lx1,maxmor), amr_jm_edi(lx1,lx1,maxmor)
+      common /camr_nonr/ amr_qmlt,amr_jtmlt,amr_jimlt,amr_jm_fc,
+     $   amr_jm_fci,amr_jm_ed, amr_jm_edi
+
+      integer amr_mrtr_fc(AMR_NFCS,lelt),amr_mrtr_ed(AMR_NEDG,lelt),
+     $   amr_nonc_fcs_f(maxmor),amr_nonc_fcs_e(maxmor),
+     $   amr_nonc_edg_f(maxmor),amr_nonc_edg_e(maxmor),
+     $   amr_mrtr_fcs_m, amr_mrtr_edg_m
+      common /camr_noni/  amr_mrtr_fc,amr_mrtr_ed,
+     $   amr_nonc_fcs_f,amr_nonc_fcs_e,amr_nonc_edg_f,amr_nonc_edg_e,
+     $   amr_mrtr_fcs_m, amr_mrtr_edg_m
+
+      logical amr_ifjmt(maxmor)
+      common /camr_nonl/ amr_ifjmt
+
+      ! interpolation arrays required by presure preconditioner
+      real amr_jmc_fc(amr_lxc,amr_lxc,2,maxmor),
+     $     amr_jmc_ed(amr_lxc,amr_lxc,maxmor),
+     $     amr_jmlCF2(lx1,lx1,2,maxmor),
+     $     amr_jmlFC2(lx1,lx1,2,maxmor)
+      common /camr_nonpr/ amr_jmc_fc,amr_jmc_ed,amr_jmlCF2,amr_jmlFC2
+      
+      ! hsmg part
+      real amr_jm_fc_mg(amr_lxm*amr_lxm,2,maxmor,amr_lmgn), 
+     $     amr_jm_ed_mg(amr_lxm*amr_lxm,maxmor,amr_lmgn),
+     $     amr_jmlCF_mg(amr_lxm*amr_lxm,2,maxmor,amr_lmgn), 
+     $     amr_jmlFC_mg(amr_lxm*amr_lxm,2,maxmor,amr_lmgn)
+     
+      common /camr_nonhsmg/ amr_jm_fc_mg, amr_jm_ed_mg, 
+     $     amr_jmlCF_mg, amr_jmlFC_mg

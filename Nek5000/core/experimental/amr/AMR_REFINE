@@ -1,0 +1,74 @@
+!> @file AMR_REFINE
+!! @brief include file with parameter and common block definitions for 
+!! refinement/coarsening
+!! @author Adam Peplinski
+!! @date Apr 1, 2016
+!=======================================================================
+!     Volume interpolation arrays
+!     interpolation arrays coarse -> fine
+!     mesh 1
+      real IXAMR1CF(LX1,LX1,2),IYAMR1CF(LY1,LY1,2),IZAMR1CF(LZ1,LZ1,2)
+!     transpose
+      real IXTAMR1CF(LX1,LX1,2),IYTAMR1CF(LY1,LY1,2),
+     $     IZTAMR1CF(LZ1,LZ1,2)
+!     mesh 2
+      real IXAMR2CF(LX2,LX2,2),IYAMR2CF(LY2,LY2,2),IZAMR2CF(LZ2,LZ2,2)
+!     transpose
+      real IXTAMR2CF(LX2,LX2,2),IYTAMR2CF(LY2,LY2,2),
+     $     IZTAMR2CF(LZ2,LZ2,2)
+
+!     interpolation arrays fine -> coarse
+!     mesh 1
+      real IXAMR1FC(LX1,LX1,2),IYAMR1FC(LY1,LY1,2),IZAMR1FC(LZ1,LZ1,2)
+!     transpose
+      real IXTAMR1FC(LX1,LX1,2),IYTAMR1FC(LY1,LY1,2),
+     $     IZTAMR1FC(LZ1,LZ1,2)
+!     mesh 2
+      real IXAMR2FC(LX2,LX2,2),IYAMR2FC(LY2,LY2,2),IZAMR2FC(LZ2,LZ2,2)
+!     transpose
+      real IXTAMR2FC(LX2,LX2,2),IYTAMR2FC(LY2,LY2,2),
+     $     IZTAMR2FC(LZ2,LZ2,2)
+
+!     axisymmetric case
+      real IAAMR1CF(LY1,LY1,2),IAAMR2CF(LY2,LY2,2),
+     $     ICAMR1CF(LY1,LY1,2),ICAMR2CF(LY2,LY2,2),
+     $     IAAMR1FC(LY1,LY1,2),IAAMR2FC(LY2,LY2,2),
+     $     ICAMR1FC(LY1,LY1,2),ICAMR2FC(LY2,LY2,2)
+!     transpose
+      real IATAMR1CF(LY1,LY1,2),IATAMR2CF(LY2,LY2,2),
+     $     ICTAMR1CF(LY1,LY1,2),ICTAMR2CF(LY2,LY2,2),
+     $     IATAMR1FC(LY1,LY1,2),IATAMR2FC(LY2,LY2,2),
+     $     ICTAMR1FC(LY1,LY1,2),ICTAMR2FC(LY2,LY2,2)
+
+!     interpolation for coarse grid solver; vertices only
+!     interpolation arrays coarse -> fine
+!     mesh crs
+      real IXAMRCCF(AMR_LXC,AMR_LXC,2)
+!     transpose
+      real IXTAMRCCF(AMR_LXC,AMR_LXC,2)
+
+
+!     multiplicity arrays
+      real IMAMR1(LX1,LY1,LZ1),IMAMR2(LX2,LY2,LZ2)
+!     face and edge multiplicty arrays; required by fast diagonalisation method
+!     I assume here LX1=LY1=LZ1, so only one array is needed
+      real  IMAMR1F(LX1,LX1), IMAMR1E(LX1)
+
+!     common blocks
+      common /camr_IXYZ1/ IXAMR1CF, IYAMR1CF, IZAMR1CF, IXTAMR1CF, 
+     $     IYTAMR1CF, IZTAMR1CF, IXAMR1FC, IYAMR1FC, IZAMR1FC,
+     $     IXTAMR1FC, IYTAMR1FC, IZTAMR1FC
+
+      common /camr_IXYZ2/ IXAMR2CF, IYAMR2CF, IZAMR2CF, IXTAMR2CF, 
+     $     IYTAMR2CF, IZTAMR2CF, IXAMR2FC, IYAMR2FC, IZAMR2FC,
+     $     IXTAMR2FC, IYTAMR2FC, IZTAMR2FC
+
+      common /camr_IXYZA/ IAAMR1CF, IAAMR2CF, ICAMR1CF, ICAMR2CF,
+     $     IATAMR1CF, IATAMR2CF, ICTAMR1CF, ICTAMR2CF,
+     $     IAAMR1FC, IAAMR2FC, ICAMR1FC, ICAMR2FC,
+     $     IATAMR1FC, IATAMR2FC, ICTAMR1FC, ICTAMR2FC
+      
+      common /camr_IXCRS/ IXAMRCCF, IXTAMRCCF
+
+      common /camr_IMULT/ IMAMR1, IMAMR2, IMAMR1F, IMAMR1E
+      
