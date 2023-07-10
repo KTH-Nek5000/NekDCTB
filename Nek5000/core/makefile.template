@@ -30,6 +30,7 @@ CATALYST=0
 ASYNC_CATALYST=0
 AMR=0
 P4EST=0
+FIDES=0
 
 VISIT_IFLAGS=
 VISIT_LFLAGS=
@@ -117,6 +118,11 @@ ifneq ($(ASYNC_CATALYST),0)
   USR_LFLAGS := ${USR_LFLAGS} $(ADIOS2_LFLAGS)
 endif
 
+ifneq ($(FIDES),0)
+  ADIOS2FIDESO := adios2_fides.o nek_adios2_fides.o
+  USR_LFLAGS := ${USR_LFLAGS} $(ADIOS2_LFLAGS)
+endif
+
 ifneq ($(AMR),0)
   AMR_INCLUDES := -I$S/experimental/amr -I$S/experimental/amr/err_est
   CORE := ${CORE} amr.o amr_tool.o amr_shm.o amr_part.o \
@@ -135,7 +141,7 @@ else
 	DUMMY:= $(shell rm -rf $S/mpif.h) 
 endif
 
-TMP1 = $(CORE) $(MXM) $(USR) $(COMM_MPI) $(VISITO) $(ADIOS2O) $(CATALYSTO) $(ASYNC_CATALYSTO)
+TMP1 = $(CORE) $(MXM) $(USR) $(COMM_MPI) $(VISITO) $(ADIOS2O) $(CATALYSTO) $(ASYNC_CATALYSTO) $(ADIOS2FIDESO)
 
 ifeq ($(CMT),1)
 TMP1 += $(CMTCORE)
@@ -311,6 +317,8 @@ $(OBJDIR)/async_catalyst.o     :$S/3rd_party/async_catalyst.f;	$(FC) -c $(FL2) $
 $(OBJDIR)/nek_async_catalyst.o :$S/3rd_party/nek_async_catalyst.cpp;$(CXX)  -c $(cFL22) $(ADIOS2_IFLAGS) $< -o $@
 $(OBJDIR)/catalyst.o     :$S/3rd_party/catalyst.f;      $(FC) -c $(FL2) $< -o $@
 $(OBJDIR)/nek_catalyst.o :$S/3rd_party/nek_catalyst.cxx;$(CXX)  -c $(cFL2) $(CATALYST_IFLAGS) $< -o $@
+$(OBJDIR)/adios2_fides.o     :$S/3rd_party/adios2_fides.f;	$(FC) -c $(FL2) $< -o $@
+$(OBJDIR)/nek_adios2_fides.o :$S/3rd_party/nek_adios2_fides.cpp;$(CXX)  -c $(cFL22) $(ADIOS2_IFLAGS) $< -o $@
 $(OBJDIR)/nek_in_situ.o  :$S/3rd_party/nek_in_situ.f;	$(FC) -c $(VISIT_IFLAGS) $(FL2) $< -o $@
 $(OBJDIR)/finiparser.o   :$S/3rd_party/finiparser.c;    $(CC)  -c $(cFL2) $(JL) $< -o $@
 $(OBJDIR)/iniparser.o    :$S/3rd_party/iniparser.c;     $(CC)  -c $(cFL2) $(JL) $< -o $@

@@ -8,6 +8,8 @@ c-----------------------------------------------------------------------
       call adios2_init()
 #elif ASYNC_CATALYST
       call async_catalyst_init()
+#elif FIDES
+      call adios2_fides_init()
 #endif
       end
 c-----------------------------------------------------------------------
@@ -20,6 +22,8 @@ c-----------------------------------------------------------------------
       call adios2_write()
 #elif ASYNC_CATALYST
       call async_catalyst_write()
+#elif FIDES
+      call adios2_fides_write()
 #endif
       end
 c-----------------------------------------------------------------------
@@ -32,6 +36,8 @@ c-----------------------------------------------------------------------
       call adios2_end()
 #elif ASYNC_CATALYST
       call async_catalyst_end()
+#elif FIDES
+      call adios2_fides_end()
 #endif
       end
 c-----------------------------------------------------------------------

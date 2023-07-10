@@ -90,6 +90,7 @@ function config_nek() {
 : ${CATALYST:=0}
 : ${ASYNC_CATALYST:=0}
 : ${ADIOS2:=0}
+: ${FIDES:=0}
 : ${PPLIST:=""}
 
 # first do some checks ...
@@ -334,10 +335,6 @@ CVODE=0
 HYPRE=0
 MXM_USER="mxm_std.o"
 VENDOR_BLAS=0
-ADIOS2=0
-CATALYST=0
-ASYNC_CATALYST=0
-AMR=0
 P4EST=0
 
 for i in $PPLIST
@@ -513,6 +510,7 @@ sed -e "s:^FC[ ]*=.*:FC=$FC:" \
 -e "s/^ADIOS2[ ]*=.*/ADIOS2:=${ADIOS2}/" \
 -e "s/^CATALYST[ ]*=.*/CATALYST:=${CATALYST}/" \
 -e "s/^ASYNC_CATALYST[ ]*=.*/ASYNC_CATALYST:=${ASYNC_CATALYST}/" \
+-e "s/^FIDES[ ]*=.*/FIDES:=${FIDES}/" \
 -e "s:^USR[ ]*=.*:USR=$USR:" \
 -e "s:^USR_LFLAGS[ ]*=.*:USR_LFLAGS=$USR_LFLAGS:" \
 -e "s:^S[ ]*=.*:S=${NEK_SOURCE_ROOT}/core:" \
@@ -585,6 +583,21 @@ if [ $ASYNC_CATALYST -ne 0 ]; then
       -e "s|^ADIOS2_LFLAGS[ ]*=.*|ADIOS2_LFLAGS:=${ADIOS2_LIBS} -lstdc++|" \
       -e "s/^PPS[ ]*=.*/PPS=${PPLIST} ASYNC_CATALYST/" \
       -e "s/^PPS2[ ]*=.*/PPS2=${PPLIST2} ASYNC_CATALYST/" \
+      .makefile > .makefile.tmp
+
+  mv .makefile.tmp .makefile
+  echo ""
+fi
+
+if [ $FIDES -ne 0 ]; then
+   echo ""
+   echo "Activate ADIOS2_FIDES instrumentation"
+
+  sed -e "s/^FIDES[ ]*=.*/FIDES:=${FIDES}/" \
+      -e "s|^ADIOS2_IFLAGS[ ]*=.*|ADIOS2_IFLAGS:=${ADIOS2_INCS}|" \
+      -e "s|^ADIOS2_LFLAGS[ ]*=.*|ADIOS2_LFLAGS:=${ADIOS2_LIBS} -lstdc++|" \
+      -e "s/^PPS[ ]*=.*/PPS=${PPLIST} FIDES/" \
+      -e "s/^PPS2[ ]*=.*/PPS2=${PPLIST2} FIDES/" \
       .makefile > .makefile.tmp
 
   mv .makefile.tmp .makefile
