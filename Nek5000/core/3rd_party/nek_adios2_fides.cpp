@@ -54,6 +54,15 @@ void convert_points_connectivity(
     const int nelbt_in,
     const bool if3d_in
 ){
+    /**
+     * @param x_in, y_in, z_in the position of points in x, y, z directions
+     * @param lx_in, ly_in, lz_in the number of points in one element in x, y, z  directions
+     * @param nelt_in the number of elements assigned to this rank
+     * @param nelbt_in the index of the first elements assigned to this rank
+     * @param if3d_in the bool indicate if the simulation case is 3d 
+     * @param points_out all the positions of the points
+     * @param connectivity_out the index of points each cell connected to 
+     */
     int idx, ii, jj, kk;
     int points_offset, start_index, index;
     int lxyz1_ = lx1_in * ly1_in * lz1_in;
