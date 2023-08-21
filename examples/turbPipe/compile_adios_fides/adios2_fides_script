@@ -27,8 +27,8 @@ export FFLAGS="-mcmodel=large"
 export CFLAGS=""
 export PPLIST="FIDES"
 export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o"
-USR+=" io_trunc.o sperri_trunc.o"
-#export USR_LFLAGS=""
+#USR+=" io_trunc.o sperri_trunc.o"
+export USR_LFLAGS=""
 
 # Compile the in-situ writer
 export PATH=${NEK_SOURCE_ROOT}/3rd_party/adios2/bin:$PATH
