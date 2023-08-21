@@ -245,6 +245,10 @@ case $FCcomp in
                FR8="-fdefault-real-8 -fdefault-double-8"
                FF77="-std=legacy"
                ;;
+  *f95*)       FCPP="-cpp"
+               FR8="-fdefault-real-8 -fdefault-double-8"
+               FF77="-std=legacy"
+               ;;
   *ftn*)       FCPP="-eZ"
                FR8="-sreal64"
                ;;
@@ -264,10 +268,11 @@ case $FCcomp in
                FR8="-fdefault-real-8"
                FF77="-Mfixed -Mstandard"
                ;;
-  *)  echo "ERROR: Cannot find a supported compiler!"
+  *)  echo "ERROR: Cannot find a supported compiler! Found $FCcomp"
       echo ""
       read;;
 esac
+echo "Using base compiler FCcomp=$FCcomp   FC=$FC"
 
 LONGLONGINT=1
 

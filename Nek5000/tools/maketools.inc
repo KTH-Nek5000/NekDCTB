@@ -95,6 +95,10 @@ case $FCcomp in
                CPPF="-std=legacy -cpp"
                BIGMEM="-mcmodel=medium"
                ;;
+  *f95*)       R8="-fdefault-real-8 -fdefault-double-8"
+               CPPF="-std=legacy -cpp"
+               BIGMEM="-mcmodel=medium"
+               ;;
   *ifort*)     R8="-r8"
                CPPF="-fpp"
                BIGMEM="-mcmodel=medium -shared-intel"

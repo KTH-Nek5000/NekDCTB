@@ -3,3 +3,10 @@
 **/**/run_gen/*rs*
 **/**/run_gen/inipipe0*
 **/**/run_gen/ms0pipe0*
+
+#binary, library, or temporary build files
+*.o
+*.a
+*.so
+*.tmp
+*.exe

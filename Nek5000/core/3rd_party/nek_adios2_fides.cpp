@@ -6,7 +6,7 @@
 #include <vector>
 
 int lx1, ly1, lz1, lx2, ly2, lz2;
-int lxyz1, lxyz2, lxyz3; 
+int lxyz1, lxyz2, lxyz3;
 int nelv, nelt;
 int nelgv, nelgt;
 int nelbv, nelbt;
@@ -31,29 +31,31 @@ adios2::Variable<double> vx;
 adios2::Variable<double> vy;
 adios2::Variable<double> vz;
 adios2::Variable<double> t;
+adios2::Variable<int> vstep;
 adios2::Variable<int> ADIOS_connectivity;
 adios2::Variable<float> ADIOS_points;
 double dataTime = 0.0;
 std::clock_t startT;
 std::clock_t startTotal;
-int rank, size, i; 
+int rank, size, i;
 int lxy1, lyz3, lx3, ly3, lz3;
 bool if3d;
 bool firstStep;
+int step = 0;
 
 void convert_points_connectivity(
-    const double * x_in,
-    const double * y_in,
-    const double * z_in,
-    float * points_out,
-    int * connectivity_out,
+    const double *x_in,
+    const double *y_in,
+    const double *z_in,
+    float *points_out,
+    int *connectivity_out,
     const int lx1_in,
     const int ly1_in,
     const int lz1_in,
     const int nelt_in,
     const int nelbt_in,
-    const bool if3d_in
-){
+    const bool if3d_in)
+{
     /**
      * @param x_in, y_in, z_in the position of points in x, y, z directions
      * @param lx_in, ly_in, lz_in the number of points in one element in x, y, z  directions
@@ -70,48 +72,60 @@ void convert_points_connectivity(
     int lx3_ = lx1_in - 1;
     int ly3_ = ly1_in - 1;
     int lz3_ = lz1_in - 1;
-    if(!if3d_in) lz3_ = lz1_in;
+    if (!if3d_in)
+        lz3_ = lz1_in;
     int lyz3_ = ly3_ * lz3_;
     int lxyz3_ = lx3_ * lyz3_;
-    if(if3d_in){
-        for(idx=0;idx<nelt_in;++idx){
-            points_offset = lxyz1_ * (idx+nelbt_in);
+    if (if3d_in)
+    {
+        for (idx = 0; idx < nelt_in; ++idx)
+        {
+            points_offset = lxyz1_ * (idx + nelbt_in);
             start_index = lxyz3_ * idx * 8;
-            for(ii=0;ii<lx3_;++ii){
-                for(jj=0;jj<ly3_;++jj){
-                    for(kk=0;kk<lz3_;++kk){
+            for (ii = 0; ii < lx3_; ++ii)
+            {
+                for (jj = 0; jj < ly3_; ++jj)
+                {
+                    for (kk = 0; kk < lz3_; ++kk)
+                    {
                         index = start_index + (ii * lyz3_ + jj * lz3_ + kk) * 8;
                         connectivity_out[index] = kk * lxy1_ + jj * lx1_in + ii + points_offset;
-                        connectivity_out[index+1] = kk * lxy1_ + jj * lx1_in + (ii+1) + points_offset;
-                        connectivity_out[index+2] = kk * lxy1_ + (jj+1) * lx1_in + (ii+1) + points_offset;
-                        connectivity_out[index+3] = kk * lxy1_ + (jj+1) * lx1_in + ii + points_offset;
-                        connectivity_out[index+4] = (kk+1) * lxy1_ + jj * lx1_in + ii + points_offset;
-                        connectivity_out[index+5] = (kk+1) * lxy1_ + jj * lx1_in + (ii+1) + points_offset;
-                        connectivity_out[index+6] = (kk+1) * lxy1_ + (jj+1) * lx1_in + (ii+1) + points_offset;
-                        connectivity_out[index+7] = (kk+1) * lxy1_ + (jj+1) * lx1_in + ii + points_offset;
+                        connectivity_out[index + 1] = kk * lxy1_ + jj * lx1_in + (ii + 1) + points_offset;
+                        connectivity_out[index + 2] = kk * lxy1_ + (jj + 1) * lx1_in + (ii + 1) + points_offset;
+                        connectivity_out[index + 3] = kk * lxy1_ + (jj + 1) * lx1_in + ii + points_offset;
+                        connectivity_out[index + 4] = (kk + 1) * lxy1_ + jj * lx1_in + ii + points_offset;
+                        connectivity_out[index + 5] = (kk + 1) * lxy1_ + jj * lx1_in + (ii + 1) + points_offset;
+                        connectivity_out[index + 6] = (kk + 1) * lxy1_ + (jj + 1) * lx1_in + (ii + 1) + points_offset;
+                        connectivity_out[index + 7] = (kk + 1) * lxy1_ + (jj + 1) * lx1_in + ii + points_offset;
                     }
                 }
             }
         }
-    }else{
-        for(idx=0;idx<nelt_in;++idx){
-            points_offset = lxyz1_ * (idx+nelbt_in);
+    }
+    else
+    {
+        for (idx = 0; idx < nelt_in; ++idx)
+        {
+            points_offset = lxyz1_ * (idx + nelbt_in);
             start_index = lxyz3_ * idx * 4;
-            for(ii=0;ii<lx3_;++ii){
-                for(jj=0;jj<ly3_;++jj){
+            for (ii = 0; ii < lx3_; ++ii)
+            {
+                for (jj = 0; jj < ly3_; ++jj)
+                {
                     index = start_index + (ii * ly3_ + jj) * 4;
                     connectivity_out[index] = jj * lx1_in + ii + points_offset;
-                    connectivity_out[index+1] = jj * lx1_in + (ii+1) + points_offset;
-                    connectivity_out[index+2] = (jj+1) * lx1_in + (ii+1) + points_offset;
-                    connectivity_out[index+3] = (jj+1) * lx1_in + ii + points_offset;
+                    connectivity_out[index + 1] = jj * lx1_in + (ii + 1) + points_offset;
+                    connectivity_out[index + 2] = (jj + 1) * lx1_in + (ii + 1) + points_offset;
+                    connectivity_out[index + 3] = (jj + 1) * lx1_in + ii + points_offset;
                 }
             }
         }
     }
-    for(idx=0;idx<nelt_in*lxyz1_;++idx){
-        points_out[i*3]=static_cast<float>(x_in[idx]);
-        points_out[i*3+1]=static_cast<float>(y_in[idx]);
-        points_out[i*3+2]=static_cast<float>(z_in[idx]);
+    for (idx = 0; idx < nelt_in * lxyz1_; ++idx)
+    {
+        points_out[i * 3] = static_cast<float>(x_in[idx]);
+        points_out[i * 3 + 1] = static_cast<float>(y_in[idx]);
+        points_out[i * 3 + 2] = static_cast<float>(z_in[idx]);
     }
 }
 
@@ -134,16 +148,16 @@ extern "C" void adios2_fides_setup_(
     const double *u,
     const double *w,
     const double *tem,
-    const int *comm_int
-){
+    const int *comm_int)
+{
     startTotal = std::clock();
-    std::string configFile="config/config.xml";
+    std::string configFile = "config/config.xml";
     MPI_Comm comm = MPI_Comm_f2c(*comm_int);
     adios = adios2::ADIOS(configFile, comm);
     MPI_Comm_rank(comm, &rank);
     MPI_Comm_size(comm, &size);
     io = adios.DeclareIO("writer");
-    writer = io.Open("globalArray", adios2::Mode::Write, comm);
+
     /*
     adios2::IO io_xyz = adios.DeclareIO("writer0");
     std::string file = "geo" + std::to_string(size) + ".bp";
@@ -164,8 +178,6 @@ extern "C" void adios2_fides_setup_(
         io.AddTransport("File", {{"Library", "posix"}});
 #endif
     }
-    //writer0.BeginStep();
-    writer.BeginStep();
 
     /*
     Assume the simulated 2d points are as following:
@@ -259,20 +271,22 @@ extern "C" void adios2_fides_setup_(
     lz1 = *lz1_in; // number of points in one element in z direction
 
     nelgv = *nelgv_in; // total number of elements
-    if3d = true; // 
-    if(*if3d_in==0) if3d = false; // bool variable to show if the case is 3d
-    nelv = *nelv_in; // number of elements calculated by this rank
-    
-    std::vector<int>temp(size);
-    MPI_Allgather(&nelv, 1, MPI_INT, temp.data(), 1,MPI_INT, comm);
+    if3d = true;       //
+    if (*if3d_in == 0)
+        if3d = false; // bool variable to show if the case is 3d
+    nelv = *nelv_in;  // number of elements calculated by this rank
+
+    std::vector<int> temp(size);
+    MPI_Allgather(&nelv, 1, MPI_INT, temp.data(), 1, MPI_INT, comm);
     nelbv = 0; // the index of the first element calculated by this rank
-    for(i=0;i<rank;++i){
+    for (i = 0; i < rank; ++i)
+    {
         nelbv += temp[i];
     }
-    
+
     init_count = 7;
-    init_total = init_count*static_cast<std::size_t>(size);
-    init_start = init_count*static_cast<std::size_t>(rank);
+    init_total = init_count * static_cast<std::size_t>(size);
+    init_start = init_count * static_cast<std::size_t>(rank);
     vINT.resize(init_count);
     vINT[0] = lx1;
     vINT[1] = ly1;
@@ -282,13 +296,13 @@ extern "C" void adios2_fides_setup_(
     vINT[5] = *iostep_in; // in-situ step is executed every *iostep_in simulation step
     vINT[6] = *if3d_in;
     init_int_const = io.DefineVariable<int>("INT_CONST", {init_total}, {init_start}, {init_count});
-    
+
     init_count = 2;
-    init_total = init_count*static_cast<std::size_t>(size);
-    init_start = init_count*static_cast<std::size_t>(rank);
+    init_total = init_count * static_cast<std::size_t>(size);
+    init_start = init_count * static_cast<std::size_t>(rank);
     vDOUBLE.resize(init_count);
     vDOUBLE[0] = *t_start_in; // the physical initial time Nek50000 would simulate
-    vDOUBLE[1] = *dt_in; // the physical time changed between two simulation step
+    vDOUBLE[1] = *dt_in;      // the physical time changed between two simulation step
     init_double_const = io.DefineVariable<double>("DOUBLE_CONST", {init_total}, {init_start}, {init_count});
     lxyz1 = lx1 * ly1 * lz1;
     lxy1 = lx1 * ly1;
@@ -296,8 +310,10 @@ extern "C" void adios2_fides_setup_(
     ly3 = ly1 - 1;
     lz3 = lz1 - 1;
     lyz3 = ly3 * lz3;
-    if(if3d) lxyz3 = lx3*ly3*lz3;
-    else lxyz3 = lx3*ly3;
+    if (if3d)
+        lxyz3 = lx3 * ly3 * lz3;
+    else
+        lxyz3 = lx3 * ly3;
     total1 = static_cast<std::size_t>(lxyz1 * nelgv);
     start1 = static_cast<std::size_t>(lxyz1 * nelbv);
     count1 = static_cast<std::size_t>(lxyz1 * nelv);
@@ -311,20 +327,35 @@ extern "C" void adios2_fides_setup_(
     vy = io.DefineVariable<double>("VY", {total1}, {start1}, {count1});
     vz = io.DefineVariable<double>("VZ", {total1}, {start1}, {count1});
     t = io.DefineVariable<double>("T", {total1}, {start1}, {count1});
+    vstep = io.DefineVariable<int>("step");
 
+    /* Fides schema */
     io.DefineAttribute<std::string>("Fides_Data_Model", "unstructured_single");
-    if(if3d){ 
+    if (if3d)
+    {
         io.DefineAttribute<std::string>("Fides_Cell_Type", "hexahedron");
-        ADIOS_connectivity = io.DefineVariable<int>( "connectivity", {total3,8}, {start3,0}, {count3,8});
-        connectivity.resize(count3*8);
-    }else{ 
-        io.DefineAttribute<std::string>("Fides_Cell_Type", "quad");
-        ADIOS_connectivity = io.DefineVariable<int>("connectivity", {total3,4}, {start3,0}, {count3,4});
-        connectivity.resize(count3*4);
+        ADIOS_connectivity = io.DefineVariable<int>("connectivity", {total3, 8}, {start3, 0}, {count3, 8});
+        connectivity.resize(count3 * 8);
     }
-    ADIOS_points = io.DefineVariable<float>( "points", {total1,3}, {start1,0}, {count1,3});
-    points.resize(count1*3);
-    convert_points_connectivity(xml_in,yml_in,zml_in,points.data(),connectivity.data(),lx1,ly1,lz1,nelv,nelbv,if3d);
+    else
+    {
+        io.DefineAttribute<std::string>("Fides_Cell_Type", "quad");
+        ADIOS_connectivity = io.DefineVariable<int>("connectivity", {total3, 4}, {start3, 0}, {count3, 4});
+        connectivity.resize(count3 * 4);
+    }
+
+    ADIOS_points = io.DefineVariable<float>("points", {total1, 3}, {start1, 0}, {count1, 3});
+    points.resize(count1 * 3);
+    convert_points_connectivity(xml_in, yml_in, zml_in, points.data(), connectivity.data(), lx1, ly1, lz1, nelv, nelbv, if3d);
+
+    io.DefineAttribute<std::string>("Fides_Coordinates_Variable", "points");
+    io.DefineAttribute<std::string>("Fides_Connectivity_Variable", "connectivity");
+    //io.DefineAttribute<std::string>("Fides_Time_Variable", "step");
+
+    std::vector<std::string> varList = {"P", "T", "VX", "VY", "VZ"};
+    std::vector<std::string> assocList = {"points", "points", "points", "points", "points"};
+    io.DefineAttribute<std::string>("Fides_Variable_List", varList.data(), varList.size());
+    io.DefineAttribute<std::string>("Fides_Variable_Associations", assocList.data(), assocList.size());
 
     writer = io.Open("globalArray", adios2::Mode::Write);
     /* 
@@ -334,23 +365,21 @@ extern "C" void adios2_fides_setup_(
     writer.BeginStep();
     writer.Put<int>(init_int_const, vINT.data());
     writer.Put<double>(init_double_const, vDOUBLE.data());
-    writer.EndStep();
-
     /*
-    Here is the second step in adios2
     But vtk related information such as points and connectivity are communicated in this step 
     Also the initail values of p (pressure), vx (velocity in x direction), vy (velocity in y direction), vz (velocity in z direction), and t (temperature) are communicated. 
     */
-    writer.BeginStep();
-    writer.Put<int>(ADIOS_connectivity,connectivity.data());
-    writer.Put<float>(ADIOS_points,points.data());
+    writer.Put<int>(ADIOS_connectivity, connectivity.data());
+    writer.Put<float>(ADIOS_points, points.data());
     writer.Put<double>(p, pr);
     writer.Put<double>(vx, v);
     writer.Put<double>(vy, u);
     writer.Put<double>(vz, w);
     writer.Put<double>(t, tem);
+    writer.Put<int>(vstep, step);
     writer.EndStep();
-    if(!rank) std::cout << "In-Situ setting done" << std::endl;
+    if (!rank)
+        std::cout << "In-Situ setting done" << std::endl;
     std::cout << "Nek rank: " << rank << " count: " << nelv << " , start: " << nelbv << " , total: " << nelgv << std::endl;
 }
 
@@ -359,8 +388,8 @@ extern "C" void adios2_fides_update_(
     const double *v,
     const double *u,
     const double *w,
-    const double *temp
-){
+    const double *temp)
+{
     startT = std::clock();
     writer.BeginStep();
     writer.Put<double>(p, pr);
@@ -368,14 +397,15 @@ extern "C" void adios2_fides_update_(
     writer.Put<double>(vy, u);
     writer.Put<double>(vz, w);
     writer.Put<double>(t, temp);
+    ++step;
+    writer.Put<int>(vstep, step);
     writer.EndStep();
-    dataTime += (std::clock() - startT) / (double) CLOCKS_PER_SEC;
+    dataTime += (std::clock() - startT) / (double)CLOCKS_PER_SEC;
 }
 
-extern "C" void adios2_fides_finalize_(){
+extern "C" void adios2_fides_finalize_()
+{
     writer.Close();
-    
-    std::cout <<  "rank: " << rank << " sin-situ time: " << dataTime << "s, total time: " << (std::clock() - startTotal) / (double) CLOCKS_PER_SEC << "s. " << std::endl;
+
+    std::cout << "rank: " << rank << " sin-situ time: " << dataTime << "s, total time: " << (std::clock() - startTotal) / (double)CLOCKS_PER_SEC << "s. " << std::endl;
 }
-
-

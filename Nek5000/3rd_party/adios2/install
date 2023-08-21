@@ -14,17 +14,17 @@ if [ -f ./lib64/libadios2_c.so ] || [ -f ./lib/libadios2_c.so ]; then
 fi
 
 rm -rf ADIOS2 2>/dev/null
-mkdir ADIOS2
+mkdir -p ADIOS2
 tar -zxvf v$VER.tar.gz
 
 cd bzip2-1.0.8
 make -f Makefile-libbz2_so 
 cd ..
 
-mkdir adios2-build
+mkdir -p adios2-build
 cd adios2-build
 #cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=`pwd`/.. -DBZIP2_INCLUDE_DIR=`pwd`/../bzip2-1.0.8 -DBZIP2_LIBRARY_DEBUG=`pwd`/../bzip2-1.0.8 -DBZIP2_LIBRARY_RELEASE=`pwd`/../bzip2-1.0.8/libbz2.so.1.0.8 -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_Python=ON ../ADIOS2
 cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=`pwd`/.. -DBZIP2_INCLUDE_DIR=`pwd`/../bzip2-1.0.8 -DBZIP2_LIBRARY_DEBUG=`pwd`/../bzip2-1.0.8 -DBZIP2_LIBRARY_RELEASE=`pwd`/../bzip2-1.0.8/libbz2.so.1.0.8 -DADIOS2_USE_ZeroMQ=OFF ../ADIOS2
-make -j 4
+make -j 4 
 make install
 

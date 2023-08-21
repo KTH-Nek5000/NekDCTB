@@ -42,7 +42,7 @@ export FIDES=1
 
 # Copy the config folder for the in-situ writer
 cp -r ${COMPRESS_SRC}/config .
-cp -r config/asynch_config.xml config/config.xml
+cp -r config/synch_config.xml config/config.xml
 
 # arguments
 args=("$@")
