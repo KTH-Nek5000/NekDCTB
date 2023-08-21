@@ -188,8 +188,8 @@ c     perturb
       include 'FRAMELP'
 !-----------------------------------------------------------------------
 !     register modules
-      call io_register
-      call trunc_register
+!      call io_register
+!      call trunc_register
 
       return
       end subroutine
@@ -203,7 +203,7 @@ c     perturb
       include 'SOLN'
 !-----------------------------------------------------------------------
 !     initialise modules
-      call trunc_init
+!      call trunc_init
 
       return
       end subroutine
