@@ -123,9 +123,9 @@ void convert_points_connectivity(
     }
     for (idx = 0; idx < nelt_in * lxyz1_; ++idx)
     {
-        points_out[i * 3] = static_cast<float>(x_in[idx]);
-        points_out[i * 3 + 1] = static_cast<float>(y_in[idx]);
-        points_out[i * 3 + 2] = static_cast<float>(z_in[idx]);
+        points_out[idx * 3] = static_cast<float>(x_in[idx]);
+        points_out[idx * 3 + 1] = static_cast<float>(y_in[idx]);
+        points_out[idx * 3 + 2] = static_cast<float>(z_in[idx]);
     }
 }
 
@@ -167,7 +167,7 @@ extern "C" void adios2_fides_setup_(
     {
         // if not defined by user, we can change the default settings
         // BPFile is the default engine
-        io.SetEngine("BPFile");
+        io.SetEngine("BP5");
         io.SetParameters({{"num_threads", "1"}});
 
         // ISO-POSIX file output is the default transport (called "File")
@@ -329,21 +329,25 @@ extern "C" void adios2_fides_setup_(
     t = io.DefineVariable<double>("T", {total1}, {start1}, {count1});
     vstep = io.DefineVariable<int>("step");
 
-    /* Fides schema */
+    /*
+     *  Fides schema 
+     */
+    /* VTK connectivity list is always a 1D array, a contiguous enumeration of all points  */
     io.DefineAttribute<std::string>("Fides_Data_Model", "unstructured_single");
     if (if3d)
     {
         io.DefineAttribute<std::string>("Fides_Cell_Type", "hexahedron");
-        ADIOS_connectivity = io.DefineVariable<int>("connectivity", {total3, 8}, {start3, 0}, {count3, 8});
+        ADIOS_connectivity = io.DefineVariable<int>("connectivity", {total3 * 8}, {start3 * 8}, {count3 * 8});
         connectivity.resize(count3 * 8);
     }
     else
     {
         io.DefineAttribute<std::string>("Fides_Cell_Type", "quad");
-        ADIOS_connectivity = io.DefineVariable<int>("connectivity", {total3, 4}, {start3, 0}, {count3, 4});
+        ADIOS_connectivity = io.DefineVariable<int>("connectivity", {total3 * 4}, {start3 * 4}, {count3 * 4});
         connectivity.resize(count3 * 4);
     }
 
+    /* VTK points is one table with the coordinates as columns OR separate 1D variables for each coordinate */
     ADIOS_points = io.DefineVariable<float>("points", {total1, 3}, {start1, 0}, {count1, 3});
     points.resize(count1 * 3);
     convert_points_connectivity(xml_in, yml_in, zml_in, points.data(), connectivity.data(), lx1, ly1, lz1, nelv, nelbv, if3d);
@@ -357,7 +361,9 @@ extern "C" void adios2_fides_setup_(
     io.DefineAttribute<std::string>("Fides_Variable_List", varList.data(), varList.size());
     io.DefineAttribute<std::string>("Fides_Variable_Associations", assocList.data(), assocList.size());
 
-    writer = io.Open("globalArray", adios2::Mode::Write);
+    /* End of Fides schema */
+
+    writer = io.Open("globalArray.bp", adios2::Mode::Write);
     /* 
     Here is the first step in adios2 
     Some Nek5000 related data are provided in this step
