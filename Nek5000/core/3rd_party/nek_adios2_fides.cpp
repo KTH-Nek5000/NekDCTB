@@ -61,9 +61,9 @@ void convert_points_connectivity(
      * @param lx_in, ly_in, lz_in the number of points in one element in x, y, z  directions
      * @param nelt_in the number of elements assigned to this rank
      * @param nelbt_in the index of the first elements assigned to this rank
-     * @param if3d_in the bool indicate if the simulation case is 3d 
+     * @param if3d_in the bool indicate if the simulation case is 3d
      * @param points_out all the positions of the points
-     * @param connectivity_out the index of points each cell connected to 
+     * @param connectivity_out the index of points each cell connected to
      */
     int idx, ii, jj, kk;
     int points_offset, start_index, index;
@@ -80,7 +80,10 @@ void convert_points_connectivity(
     {
         for (idx = 0; idx < nelt_in; ++idx)
         {
-            points_offset = lxyz1_ * (idx + nelbt_in);
+            /* Global point index offset would be:
+                points_offset = lxyz1_ * (idx + nelbt_in);
+            */
+            points_offset = lxyz1_ * idx;
             start_index = lxyz3_ * idx * 8;
             for (ii = 0; ii < lx3_; ++ii)
             {
@@ -183,7 +186,7 @@ extern "C" void adios2_fides_setup_(
     Assume the simulated 2d points are as following:
     0 - 1 - 2 - 3 - 4 - 5 - 6 - 7
     |   |   |   |   |   |   |   |
-    8 - 9 - 10- 11- 12- 13- 14- 15 
+    8 - 9 - 10- 11- 12- 13- 14- 15
     |   |   |   |   |   |   |   |
     16- 17- 18- 19- 20- 21- 22- 23
     |   |   |   |   |   |   |   |
@@ -263,7 +266,7 @@ extern "C" void adios2_fides_setup_(
     | |   | | |   | | |   | | |   | |
     | 50- 51| 54- 55| 58- 59| 62- 63|
     |-------|-------|-------|-------|
-    We don't build cells between elements, as long as number of reader ranks is the factor of the total number of elements or all the points within one element would be read by one reader rank, visualization and data analysis doesn't require these cells would be correct, regardless of the writer ranks, because Nek5000 balances the workload and covers all the elements. 
+    We don't build cells between elements, as long as number of reader ranks is the factor of the total number of elements or all the points within one element would be read by one reader rank, visualization and data analysis doesn't require these cells would be correct, regardless of the writer ranks, because Nek5000 balances the workload and covers all the elements.
     */
 
     lx1 = *lx1_in; // number of points in one element in x direction
@@ -330,7 +333,7 @@ extern "C" void adios2_fides_setup_(
     vstep = io.DefineVariable<int>("step");
 
     /*
-     *  Fides schema 
+     *  Fides schema
      */
     /* VTK connectivity list is always a 1D array, a contiguous enumeration of all points  */
     io.DefineAttribute<std::string>("Fides_Data_Model", "unstructured_single");
@@ -354,7 +357,7 @@ extern "C" void adios2_fides_setup_(
 
     io.DefineAttribute<std::string>("Fides_Coordinates_Variable", "points");
     io.DefineAttribute<std::string>("Fides_Connectivity_Variable", "connectivity");
-    //io.DefineAttribute<std::string>("Fides_Time_Variable", "step");
+    // io.DefineAttribute<std::string>("Fides_Time_Variable", "step");
 
     std::vector<std::string> varList = {"P", "T", "VX", "VY", "VZ"};
     std::vector<std::string> assocList = {"points", "points", "points", "points", "points"};
@@ -364,16 +367,16 @@ extern "C" void adios2_fides_setup_(
     /* End of Fides schema */
 
     writer = io.Open("globalArray.bp", adios2::Mode::Write);
-    /* 
-    Here is the first step in adios2 
+    /*
+    Here is the first step in adios2
     Some Nek5000 related data are provided in this step
     */
     writer.BeginStep();
     writer.Put<int>(init_int_const, vINT.data());
     writer.Put<double>(init_double_const, vDOUBLE.data());
     /*
-    But vtk related information such as points and connectivity are communicated in this step 
-    Also the initail values of p (pressure), vx (velocity in x direction), vy (velocity in y direction), vz (velocity in z direction), and t (temperature) are communicated. 
+    But vtk related information such as points and connectivity are communicated in this step
+    Also the initail values of p (pressure), vx (velocity in x direction), vy (velocity in y direction), vz (velocity in z direction), and t (temperature) are communicated.
     */
     writer.Put<int>(ADIOS_connectivity, connectivity.data());
     writer.Put<float>(ADIOS_points, points.data());
