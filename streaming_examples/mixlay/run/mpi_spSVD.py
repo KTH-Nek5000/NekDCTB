@@ -493,132 +493,82 @@ class spSVD():
         return v
 
 
-
-    def io_allocate_adios(self,ibpStream, ioRead):
+    def io_allocate_adios(self, ioRead, p, comm):
+        # Get information from the communicator
+        rank = comm.Get_rank()
+        size = comm.Get_size()
         
-        currentStep = ibpStream.CurrentStep() 
         var_inVX = ioRead.InquireVariable("VX")
-        var_inVX = ioRead.InquireVariable("VY")
-        var_inVX = ioRead.InquireVariable("VZ")
+        var_inVY = ioRead.InquireVariable("VY")
+        var_inVZ = ioRead.InquireVariable("VZ")
         var_inBM1 = ioRead.InquireVariable("BM1")
         var_inLGLEL = ioRead.InquireVariable("LGLEL")
 
-        if (var_inVX and var_inVY) is not None:
-            #Set up array sizes in the first step
-            if currentStep == 0:
-                total_size=var_inVX.Shape()[0]
-                my_count= int(total_size/size)
-                my_start= int(my_count*rank)
-                if total_size % size != 0:
-                    if rank < (total_size % size):
-                        my_count += 1
-                        my_start += rank
-                    else:
-                        my_start += (total_size%size)    
+        if (var_inVX) is not None:
+            total_size=var_inVX.Shape()[0]
+            my_count= int(total_size/size)
+            my_start= int(my_count*rank)
+            if total_size % size != 0:
+                if rank < (total_size % size):
+                    my_count += 1
+                    my_start += rank
+                else:
+                    my_start += (total_size%size)    
 
-                #Allocate arrays
-                Xi = np.zeros((my_count,1), dtype=np.double)
-                buff = np.zeros((my_count,p), dtype=np.double)
-
-        
+            #Allocate arrays
+            Xi = np.zeros((my_count,1), dtype=np.double)
+            Xtemp = np.zeros((my_count,1), dtype=np.double)
+            buff = np.zeros((my_count,p), dtype=np.double)
 
 
-
-    def io_step_adios(self, ibpStream, ioRead):
-
-        currentStep = ibpStream.CurrentStep() 
-        var_inVX = ioRead.InquireVariable("VX")
-        var_inVX = ioRead.InquireVariable("VY")
-        var_inVX = ioRead.InquireVariable("VZ")
-        var_inBM1 = ioRead.InquireVariable("BM1")
-        var_inLGLEL = ioRead.InquireVariable("LGLEL")
-
-        if (var_inVX and var_inVY) is not None:
-            #Set up array sizes in the first step
-            if currentStep == 0:
-                total_size=var_inVX.Shape()[0]
-                my_count= int(total_size/size)
-                my_start= int(my_count*rank)
-                if total_size % size != 0:
-                    if rank < (total_size % size):
-                        my_count += 1
-                        my_start += rank
-                    else:
-                        my_start += (total_size%size)    
-
-                #Allocate arrays
-                Xi = np.zeros((my_count,1), dtype=np.double)
-                buff = np.zeros((my_count,p), dtype=np.double)
+            #Allocate arrays
+            bm1i = np.zeros((my_count,1), dtype=np.double)
+            bm1sqrti = np.zeros((my_count,1), dtype=np.double)
             
-                #Select the data in the global array that belongs to me
-                var_inVX.SetSelection([[my_start], [my_count]])
-
-                #Read the variable into array
-                ibpStream.Get(var_inVX, Xi)
-
-            if var_inBM1 is not None:
-                #Set up array sizes in the first step
-                if currentStep == 0:
-                    total_size=var_inVX.Shape()[0]
-                    my_count= int(total_size/size)
-                    my_start= int(my_count*rank)
-                    if total_size % size != 0:
-                        if rank < (total_size % size):
-                            my_count += 1
-                            my_start += rank
-                        else:
-                            my_start += (total_size%size)    
-
-                    #Allocate arrays
-                    bm1i = np.zeros((my_count,1), dtype=np.double)
-                    bm1sqrti = np.zeros((my_count,1), dtype=np.double)
-
-                #Select the data in the global array that belongs to me
-                var_inBM1.SetSelection([[my_start], [my_count]])
-
-                #Read the variable into array
-                ibpStream.Get(var_inBM1, bm1i)
-                bm1sqrti = np.copy(np.sqrt(bm1i))    
-
-            if var_inLGLEL is not None:
-                #Set up array sizes in the first step
-                if currentStep == 0:
-                    total_size2=var_inLGLEL.Shape()[0]
-                    my_count2= int(total_size2/size)
-                    my_start2= int(my_count2*rank)
-                    if total_size2 % size != 0:
-                        if rank < (total_size2 % size):
-                            my_count2 += 1
-                            my_start2 += rank
-                        else:
-                            my_start2 += (total_size2%size)
+        if var_inLGLEL is not None:
+            total_size2=var_inLGLEL.Shape()[0]
+            my_count2= int(total_size2/size)
+            my_start2= int(my_count2*rank)
+            if total_size2 % size != 0:
+                if rank < (total_size2 % size):
+                    my_count2 += 1
+                    my_start2 += rank
+                else:
+                    my_start2 += (total_size2%size)
                         
-                    #Allocate arrays
-                    inLGLEL = np.zeros((my_count2,1), dtype=np.int32)
-                    lgleli = np.zeros((my_count2,1), dtype=np.int32)
+            #Allocate arrays
+            lgleli = np.zeros((my_count2,1), dtype=np.int32)
 
-                #Select the data in the global array that belongs to me
-                var_inLGLEL.SetSelection([[my_start2], [my_count2]])
+        self.my_start  = my_start
+        self.my_count  = my_count
+        self.my_start2 = my_start2
+        self.my_count2 = my_count2
 
-                #Read the variable into array
-                ibpStream.Get(var_inLGLEL, inLGLEL)
-                lgleli = np.copy(inLGLEL.flatten())
-
-            ibpStream.EndStep()
+        return Xi, Xtemp, buff, bm1i, bm1sqrti, lgleli 
 
 
+    def io_read_adios(self, ioRead, ibpStream, Xi, bm1i, bm1sqrti, lgleli, comm):
+        #Read data
+        var_inVX = ioRead.InquireVariable("VX")
+        var_inVY = ioRead.InquireVariable("VY")
+        var_inVZ = ioRead.InquireVariable("VZ")
+        var_inBM1 = ioRead.InquireVariable("BM1")
+        var_inLGLEL = ioRead.InquireVariable("LGLEL")
 
+        #Select the data in the global array that belongs to me
+        var_inVX.SetSelection([[self.my_start], [self.my_count]])
+        var_inBM1.SetSelection([[self.my_start], [self.my_count]])
+        var_inLGLEL.SetSelection([[self.my_start2], [self.my_count2]])
 
+        #Read the variable into array
+        ibpStream.Get(var_inVX, Xi)
+        ibpStream.Get(var_inBM1, bm1i)
+        ibpStream.Get(var_inLGLEL, lgleli)
+            
+        #Do any needed post processing
+        bm1sqrti = np.copy(np.sqrt(bm1i))    
 
-
-
-
-
-
-
-
-
-
+        return Xi, bm1sqrti, lgleli
 
 
 

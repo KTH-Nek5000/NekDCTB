@@ -56,28 +56,7 @@ if ifgbl_update==True:
     outprefix='gbl'
 else:
     outprefix='lcl'
-##################################
-## Overwrite the hyperparameters if command line arguments were given
-#if len(sys.argv) > 1:
-#    p=int(sys.argv[1])
-#    k=int(sys.argv[2])
-#    min_ratio=float(sys.argv[3])
-#    str_mr = str(min_ratio).replace('.','')
-#    ifgbl_update=bool(int(sys.argv[4]))
-#    ifautoupdate=bool(int(sys.argv[5]))
-#
-#    if ifgbl_update==True: 
-#        if ifautoupdate==True:
-#            outprefix='auto_gbl_p'+repr(p)+'_k'+repr(k)+'_mr'+str_mr
-#        else:
-#            outprefix='fixd_gbl_p'+repr(p)+'_k'+repr(k)+'_mr'+str_mr
-#    else:
-#        if ifautoupdate==True:
-#            outprefix='auto_lcl_p'+repr(p)+'_k'+repr(k)+'_mr'+str_mr
-#        else:
-#            outprefix='fixd_lcl_p'+repr(p)+'_k'+repr(k)+'_mr'+str_mr
-#
-#################################
+
 
 if __name__ == "__main__":
 
@@ -124,16 +103,11 @@ if __name__ == "__main__":
     if (rank==0): 
         v=np.empty((nxyze,1))
         bm1sqrt=np.empty((nxyze,1))
-        lglel=np.empty((nel),dtype=np.int32)
+        lglel=np.empty((nel,1),dtype=np.int32)
     else:
         v=None
         bm1sqrt=None
         lglel=None
-
-    ##create local recieve buffer in each MPI rank
-    #Xi = np.empty((int(nxyze/size),1))
-    #buff=np.empty((int(nxyze/size),p))
-    #bm1sqrti = np.empty((int(nxyze/size),1))
 
     # Create dummies for the streaming POD
     U_1t = None
@@ -149,114 +123,23 @@ if __name__ == "__main__":
     # Open the insitu array... It is open until stream ends
     ibpStream = ioRead.Open("globalArray", adios2.Mode.Read, comm)
     
-    #pbar= tqdm(total=nsnap)
-    #for isnap in range(0,nsnap):
     isnap = -1
     while True:
-
-############################ Read normally start ##########################
-        ##read mass matrix
-        #if (isnap==0):
-        #    # Read mass matrix
-        #    if (isnap==0):
-        #        if (rank==0):
-        #            bm1sqrt=spPOD.read_mass_data(bm1sqrt,isnap)
-	#	        #Scatter the data red from rank0
-        #        comm.Scatter(bm1sqrt, bm1sqrti, root=0)
-
-        ## Read vel matrix
-        #if (rank==0):
-        #    v = spPOD.read_vel_data(v,isnap)
-        ##Scatter the data red from rank0
-        #comm.Scatter(v, Xi, root=0)
-############################ Read normally end ############################
-
  
         stepStatus = ibpStream.BeginStep()
 
         if stepStatus == adios2.StepStatus.OK:
 
             isnap = int(isnap + 1)
-        
-            currentStep = ibpStream.CurrentStep() 
-            var_inVX = ioRead.InquireVariable("VX")
-            var_inBM1 = ioRead.InquireVariable("BM1")
-            var_inLGLEL = ioRead.InquireVariable("LGLEL")
+            currentStep = ibpStream.CurrentStep()
 
-            if var_inVX is not None:
-                #Set up array sizes in the first step
-                if currentStep == 0:
-                    total_size=var_inVX.Shape()[0]
-                    my_count= int(total_size/size)
-                    my_start= int(my_count*rank)
-                    if total_size % size != 0:
-                        if rank < (total_size % size):
-                            my_count += 1
-                            my_start += rank
-                        else:
-                            my_start += (total_size%size)    
-
-                    #Allocate arrays
-                    Xi = np.zeros((my_count,1), dtype=np.double)
-                    buff = np.zeros((my_count,p), dtype=np.double)
-            
-                #Select the data in the global array that belongs to me
-                var_inVX.SetSelection([[my_start], [my_count]])
-
-                #Read the variable into array
-                ibpStream.Get(var_inVX, Xi)
-
-            if var_inBM1 is not None:
-                #Set up array sizes in the first step
-                if currentStep == 0:
-                    total_size=var_inVX.Shape()[0]
-                    my_count= int(total_size/size)
-                    my_start= int(my_count*rank)
-                    if total_size % size != 0:
-                        if rank < (total_size % size):
-                            my_count += 1
-                            my_start += rank
-                        else:
-                            my_start += (total_size%size)    
-
-                    #Allocate arrays
-                    bm1i = np.zeros((my_count,1), dtype=np.double)
-                    bm1sqrti = np.zeros((my_count,1), dtype=np.double)
-
-                #Select the data in the global array that belongs to me
-                var_inBM1.SetSelection([[my_start], [my_count]])
-
-                #Read the variable into array
-                ibpStream.Get(var_inBM1, bm1i)
-                bm1sqrti = np.copy(np.sqrt(bm1i))    
-
-            if var_inLGLEL is not None:
-                #Set up array sizes in the first step
-                if currentStep == 0:
-                    total_size2=var_inLGLEL.Shape()[0]
-                    my_count2= int(total_size2/size)
-                    my_start2= int(my_count2*rank)
-                    if total_size2 % size != 0:
-                        if rank < (total_size2 % size):
-                            my_count2 += 1
-                            my_start2 += rank
-                        else:
-                            my_start2 += (total_size2%size)
-                        
-                    #Allocate arrays
-                    inLGLEL = np.zeros((my_count2,1), dtype=np.int32)
-                    lgleli = np.zeros((my_count2,1), dtype=np.int32)
-
-                #Select the data in the global array that belongs to me
-                var_inLGLEL.SetSelection([[my_start2], [my_count2]])
-
-                #Read the variable into array
-                ibpStream.Get(var_inLGLEL, inLGLEL)
-                lgleli = np.copy(inLGLEL.flatten())
-
+            # Get the data
+            if (currentStep == 0) :
+                Xi, Xtemp, buff, bm1i, bm1sqrti, lgleli = spPOD.io_allocate_adios(ioRead, p, comm)
+ 
+            Xi, bm1sqrti, lgleli = spPOD.io_read_adios(ioRead, ibpStream, Xi, bm1i, bm1sqrti, lgleli, comm)
             ibpStream.EndStep()
 
-            print(lgleli.shape)
 
             print("scale data")
             #Scale the data with the mass matrix
@@ -346,21 +229,8 @@ if __name__ == "__main__":
 
     U, bm1sqrt2 = spPOD.gatherModesandMass_atRank0(U_1t,bm1sqrti,spPOD.nxyze,kk,comm)
 
-    
-    print(lgleli)
-    print("gather the global element number")
-
     comm.Gather([lgleli,MPI.INT], [lglel, MPI.INT], root=0)
 
-    if rank == 0: 
-        print("==========")
-        for i in range(0, len(lglel)):
-            print(lglel[i])
-
-    #Temporal test
-    #print("temporal test")
-    #temp=U@np.diag(D_1t)@Vt_1t
-    #U=np.copy(temp)
 
     if ifgbl_update == False: S, _ = spPOD.gatherModesandMass_atRank0(Si,bm1sqrti,spPOD.nxyze,num_recs,comm)
 
