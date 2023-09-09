@@ -1,0 +1,7 @@
+-2 		 spatial dimension (<0 => .re2 and .rea files)
+1  		 number of fields
+box_1 		 name of the box
+-80   20  1 	 nelx, nely, nelz (<0 => equally divided)
+0.00   20.00  1    xStart, xEnd, gain
+0.00  1.14  2.24  3.26  4.19  5.01  5.71  6.26  6.67  6.92  7.00  7.08  7.33  7.74  8.29  8.99  9.81  10.74  11.76  12.86  14.00  	 y1,y2,...
+v  ,o  ,ON ,ON  bcs (west, east, south, north)

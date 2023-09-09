@@ -17,6 +17,7 @@ adios2::Variable<double> p;
 adios2::Variable<double> vx;
 adios2::Variable<double> vy;
 adios2::Variable<double> vz;
+adios2::Variable<double> bm1;
 adios2::Variable<double> vxr;
 adios2::Variable<double> vyr;
 adios2::Variable<double> vzr;
@@ -84,14 +85,6 @@ extern "C" void adios2_setup_(
     //unsigned int nelv = static_cast<unsigned int>((*nelgv) / size);
     unsigned int nelv = static_cast<unsigned int>((*nelvin));
     unsigned int start = static_cast<unsigned int>(*nelb);
-    //if((*nelgv)%size != 0){
-    //    if(rank < ((*nelgv) % size)){
-    //        ++nelv;
-    //        start += static_cast<unsigned int>(rank);
-    //    }else{
-    //        start += static_cast<unsigned int>((*nelgv)%size);
-    //    }
-    //}
     start *= static_cast<unsigned int>(*nval);
     // n is count, i.e number of entries in the array in my rank
     unsigned int n = static_cast<unsigned int> (*nval) * nelv;
@@ -108,38 +101,22 @@ extern "C" void adios2_setup_(
     vx = io.DefineVariable<double>("VX", {gn}, {start}, {n});
     vy = io.DefineVariable<double>("VY", {gn}, {start}, {n});
     vz = io.DefineVariable<double>("VZ", {gn}, {start}, {n});
+    bm1 = io.DefineVariable<double>("BM1", {gn}, {start}, {n});
 
     // Do everything again for the temperature (I do not know why)
     //unsigned int nelt = static_cast<unsigned int>((*nelgt) / size);
     unsigned int nelt = static_cast<unsigned int>((*nelvin));
     start = static_cast<unsigned int>(*nelb);
-    //if((*nelgt)%size != 0){
-    //    if(rank < ((*nelgt) % size)){
-    //        ++nelt;
-    //        start += static_cast<unsigned int>(rank);
-    //    }else{
-    //        start += static_cast<unsigned int>((*nelgt)%size);
-    //    }
-    //}
     ifile = 0 ;
     start = start * static_cast<unsigned int>(*nval);
     n = static_cast<unsigned int> (*nval) * nelt;
     gn = static_cast<unsigned int>((*nelgt)*(*nval));
-    // t = io.DefineVariable<double>("T", {gn}, {start}, {n});
 
 
     // Do everything again for the global indices 
     //unsigned int nelt = static_cast<unsigned int>((*nelvin));
     nelt = static_cast<unsigned int>((*nelvin));
     start = static_cast<unsigned int>(*nelb);
-    //if((*nelgt)%size != 0){
-    //    if(rank < ((*nelgt) % size)){
-    //        ++nelt;
-    //        start += static_cast<unsigned int>(rank);
-    //    }else{
-    //        start += static_cast<unsigned int>((*nelgt)%size);
-    //    }
-    //}
     ifile = 0 ;
     start = start;
     n = static_cast<unsigned int> (nelt);
@@ -158,91 +135,6 @@ extern "C" void adios2_setup_(
     // As I see it, this is a buffer, where the compressor will read
     // and compress.
     writer = io.Open("globalArray", adios2::Mode::Write);
-}
-
-extern "C" void adios2_setup_2d_(
-    const int *nval,
-    const int *nelgv,
-    const int *nelgt,
-    const double *xml,
-    const double *yml,
-    const int *comm_int
-){
-    // For comments here, just check the 3D version on top
-    std::string configFile="config/config.xml";
-    MPI_Comm comm = MPI_Comm_f2c(*comm_int);
-    adios = adios2::ADIOS(configFile, comm);
-    MPI_Comm_rank(comm, &rank);
-    MPI_Comm_size(comm, &size);
-    io = adios.DeclareIO("writer");
-    io_head = adios.DeclareIO("writer0");
-    if (!io.InConfigFile())
-    {
-        // if not defined by user, we can change the default settings
-        // BPFile is the default engine
-        io.SetEngine("BPFile");
-        io.SetParameters({{"num_threads", "1"}});
-
-        // ISO-POSIX file output is the default transport (called "File")
-        // Passing parameters to the transport
-    }
-    unsigned int nelv = static_cast<unsigned int>((*nelgv) / size);
-    unsigned int start = nelv * static_cast<unsigned int>(rank);
-    if((*nelgv)%size != 0){
-        if(rank < ((*nelgv) % size)){
-            ++nelv;
-            start += static_cast<unsigned int>(rank);
-        }else{
-            start += static_cast<unsigned int>((*nelgv)%size);
-        }
-    }
-    start *= static_cast<unsigned int>(*nval);
-    unsigned int n = static_cast<unsigned int> (*nval) * nelv;
-    unsigned int gn = static_cast<unsigned int>((*nelgv)*(*nval));
-    //std::cout << rank << ": " << gn << ", " << start << "," << n << std::endl;
-    x = io_head.DefineVariable<double>("X", {gn}, {start}, {n});
-    y = io_head.DefineVariable<double>("Y", {gn}, {start}, {n});
-    // p = io.DefineVariable<double>("P", {gn}, {start}, {n});
-    vx = io.DefineVariable<double>("VX", {gn}, {start}, {n});
-    // vy = io.DefineVariable<double>("VY", {gn}, {start}, {n});
-    unsigned int nelt = static_cast<unsigned int>((*nelgt) / size);
-    start = nelt * static_cast<unsigned int>(rank);
-    if((*nelgt)%size != 0){
-        if(rank < ((*nelgt) % size)){
-            ++nelt;
-            start += static_cast<unsigned int>(rank);
-        }else{
-            start += static_cast<unsigned int>((*nelgt)%size);
-        }
-    }
-    start *= static_cast<unsigned int>(*nval);
-    n = static_cast<unsigned int> (*nval) * nelt;
-    gn = static_cast<unsigned int>((*nelgt)*(*nval));
-    // t = io.DefineVariable<double>("T", {gn}, {start}, {n});
-
-    writer_head = io_head.Open("geo.bp", adios2::Mode::Write);
-    writer_head.Put<double>(x, xml);
-    writer_head.Put<double>(y, yml);
-    writer_head.Close();
-    writer = io.Open("globalArray", adios2::Mode::Write);
-
-}
-
-extern "C" void adios2_update_2d_(
-    const double *pr,
-    const double *v,
-    const double *u,
-    const double *temp
-){  
-    // For comments, check the 3D version below
-    startT = std::clock();
-    writer.BeginStep();
-    // writer.Put<double>(p, pr);
-    writer.Put<double>(vx, v);
-    // writer.Put<double>(vy, u);
-    // writer.Put<double>(t, temp);
-    writer.EndStep();
-    dataTime += (std::clock() - startT) / (double) CLOCKS_PER_SEC;
 }
 
 extern "C" void adios2_update_(
@@ -267,6 +159,29 @@ extern "C" void adios2_update_(
     dataTime += (std::clock() - startT) / (double) CLOCKS_PER_SEC;
 }
 
+extern "C" void adios2_stream_(
+    const int *lglel,
+    const double *pr,
+    const double *v,
+    const double *u,
+    const double *w,
+    const double *mass1,
+    const double *temp
+){
+    startT = std::clock();
+    // Begin a step of the writer. Remember that this will write to
+    // the variable globalarray that will be read by the compressor.
+    writer.BeginStep();
+    writer.Put<double>(p, pr);
+    writer.Put<double>(vx, v);
+    writer.Put<double>(vy, u);
+    writer.Put<double>(vz, w);
+    writer.Put<double>(bm1, mass1);
+    writer.Put<int>(lglelw, lglel);
+    //writer.Put<double>(t, temp);
+    writer.EndStep();
+    dataTime += (std::clock() - startT) / (double) CLOCKS_PER_SEC;
+}
 extern "C" void adios2_read_(
     int *lglelrr,
     double *pr,
