@@ -1,0 +1,43 @@
+!> @file IOSTREAMD
+!! @ingroup io_tools
+!! @brief Include file for io streaming to python
+!! @author Adalberto Perez
+!! @date June, 2021
+!=======================================================================
+!     module id and name
+      integer iostream_id
+      character*(*) iostream_name
+      parameter(iostream_name='IOSTREAM')
+
+!     runtime parameter part
+!     section id
+      integer iostream_sec_id
+      integer numfile
+      integer numfile_id 
+      integer iostreamstep
+      integer iostreamstep_id
+      logical ifsstream
+      logical ifinsitustream
+      integer ifsstream_id
+      integer ifinsitustream_id
+      character*132 filetostream
+      integer filetostream_id
+
+      !initialisation flag
+      logical iostream_ifinit
+
+      
+      !     common blocks 
+      common /iostream_runtime/ iostream_id, iostream_sec_id, 
+     &                         numfile, numfile_id,
+     &                         iostreamstep, iostreamstep_id,  
+     &                         ifsstream_id, 
+     &                         ifinsitustream_id,filetostream_id
+
+
+      common /iostream_runtime_c / filetostream
+
+      common /iostream_runtime_l / ifsstream,
+     &                            ifinsitustream, iostream_ifinit
+
+
