@@ -2,15 +2,15 @@
 # nek parameter file
 #
 [GENERAL] 
-stopAt = endTime
-endTime = 20.0
+stopAt = numSteps
+numSteps = 1000
 dt = 1e-02
 timeStepper = bdf2
 extrapolation = OIFS
 targetCFL = 1.9
 
-writeControl = runTime
-writeInterval = 0
+writeControl = timeStep
+writeInterval = 2
 
 [PROBLEMTYPE]
 equation = incompNS
